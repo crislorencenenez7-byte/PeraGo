@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enter PIN - PeraGo</title>
+  <link rel="stylesheet" href="auth.css">
+</head>
+
+<body>
+
+  <div class="auth-page">
+
+    <div class="auth-brand">
+      <div class="brand-icon">P</div>
+      <h1>PeraGo</h1>
+      <p>Your digital wallet</p>
+    </div>
+
+    <div class="auth-card">
+
+      <div class="auth-heading">
+        <h2>Enter your PIN</h2>
+        <p>Enter your 6-digit PIN to continue.</p>
+      </div>
+
+      <div class="input-group">
+        <label for="pin">6-Digit PIN</label>
+
+        <input
+          class="otp-input"
+          type="password"
+          id="pin"
+          maxlength="6"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="••••••"
+        >
+      </div>
+
+      <button class="primary-btn" id="unlockBtn" type="button">
+        Unlock
+      </button>
+
+      <div id="pinMessage" class="auth-message"></div>
+
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { checkPin } from "./pin.js";
+
+    const pinInput = document.getElementById("pin");
+    const unlockBtn = document.getElementById("unlockBtn");
+    const message = document.getElementById("pinMessage");
+
+    unlockBtn.addEventListener("click", () => {
+
+      const pin = pinInput.value.trim();
+
+      if (!/^\d{6}$/.test(pin)) {
+        message.textContent = "Enter your 6-digit PIN.";
+        return;
+      }
+
+      if (checkPin(pin)) {
+
+        message.textContent = "Unlocked!";
+
+        sessionStorage.setItem("perago_unlocked", "true");
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 400);
+
+      } else {
+
+        message.textContent = "Incorrect PIN.";
+        pinInput.value = "";
+        pinInput.focus();
+
+      }
+
+    });
+  </script>
+
+</body>
+</html>
