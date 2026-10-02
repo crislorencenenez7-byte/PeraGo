@@ -13,14 +13,26 @@ const auth = getAuth(app);
 let confirmationResult = null;
 
 function normalizePhoneNumber(phone) {
-  phone = phone.trim().replace(/\s+/g, "");
+  phone = phone.trim().replace(/[^0-9+]/g, "");
 
+  // 091XXXXXXXX -> +639XXXXXXXXX
   if (phone.startsWith("09") && phone.length === 11) {
     return "+63" + phone.substring(1);
   }
 
+  // 9XXXXXXXXX -> +639XXXXXXXXX
+  if (phone.startsWith("9") && phone.length === 10) {
+    return "+63" + phone;
+  }
+
+  // +639XXXXXXXXX
   if (phone.startsWith("+639") && phone.length === 13) {
     return phone;
+  }
+
+  // 639XXXXXXXXX
+  if (phone.startsWith("639") && phone.length === 12) {
+    return "+" + phone;
   }
 
   throw new Error("Invalid Philippine mobile number.");
