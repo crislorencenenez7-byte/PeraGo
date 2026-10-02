@@ -3,85 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register - PeraGo</title>
+  <title>Create Account - PeraGo</title>
   <link rel="stylesheet" href="auth.css">
 </head>
 
 <body>
 
-  <main class="auth-container">
+  <div class="auth-page">
+
+    <div class="auth-brand">
+      <div class="brand-icon">P</div>
+      <h1>PeraGo</h1>
+      <p>Your simple digital wallet</p>
+    </div>
 
     <div class="auth-card">
 
-      <div class="auth-logo">
-        <div class="logo-circle">P</div>
-        <h1>PeraGo</h1>
-        <p>Mas mabilis. Mas madali.</p>
+      <div class="auth-heading">
+        <h2>Create Account</h2>
+        <p>Register your mobile number to get started.</p>
       </div>
 
-      <h2>Create Account</h2>
-      <p class="subtitle">Register using your mobile number</p>
+      <div class="input-group">
+        <label for="phone">Mobile Number</label>
 
-      <label for="phone">Mobile Number</label>
+        <div class="input-box">
+          <span class="country-code">🇵🇭 +63</span>
+          <input
+            type="tel"
+            id="phone"
+            placeholder="9XXXXXXXXX"
+            inputmode="numeric"
+            autocomplete="tel"
+          >
+        </div>
 
-      <input
-        type="tel"
-        id="phone"
-        name="phone"
-        placeholder="09XXXXXXXXX"
-        inputmode="numeric"
-        autocomplete="tel"
-      >
-
-      <button type="button" id="sendOtpBtn">
-        Send OTP
-      </button>
+        <small>Example: 9171234567</small>
+      </div>
 
       <div id="recaptcha-container"></div>
 
-      <div id="otpSection" style="display:none; margin-top:16px;">
+      <button class="primary-btn" id="sendOtpBtn" type="button">
+        Send OTP
+      </button>
 
-        <label for="otp">6-Digit OTP</label>
+      <div id="otpSection" class="otp-section">
 
-        <input
-          type="text"
-          id="otp"
-          name="otp"
-          placeholder="Enter 6-digit OTP"
-          inputmode="numeric"
-          maxlength="6"
-          autocomplete="one-time-code"
-        >
+        <div class="input-group">
+          <label for="otp">Verification Code</label>
+
+          <input
+            class="otp-input"
+            type="text"
+            id="otp"
+            placeholder="000000"
+            maxlength="6"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+          >
+
+          <small>Enter the 6-digit code sent to your phone.</small>
+        </div>
 
         <button
-          type="button"
+          class="primary-btn"
           id="verifyOtpBtn"
-          style="display:none;"
+          type="button"
         >
-          Verify OTP
+          Verify & Continue
         </button>
 
       </div>
 
-      <p id="authMessage"></p>
+      <div id="authMessage" class="auth-message"></div>
 
-      <p class="switch-auth">
-        Already have an account?
-        <a href="login.html">Login</a>
-      </p>
+      <div class="divider">
+        <span>Already have an account?</span>
+      </div>
+
+      <a class="secondary-btn" href="login.html">
+        Login
+      </a>
 
     </div>
 
-  </main>
+    <p class="footer-text">
+      By continuing, you agree to use PeraGo as a demo wallet.
+    </p>
+
+  </div>
 
   <script type="module" src="auth.js"></script>
 
   <script>
-    const otpInput = document.getElementById("otp");
     const otpSection = document.getElementById("otpSection");
+    const otpInput = document.getElementById("otp");
+
+    otpSection.style.display = "none";
 
     const observer = new MutationObserver(() => {
-      if (otpInput && otpInput.style.display !== "none") {
+      if (otpInput.style.display !== "none") {
         otpSection.style.display = "block";
       }
     });
