@@ -110,5 +110,16 @@
   </button>
 </div>
 
+
+<script type="module">
+  import { getBalance, formatPeso } from "./wallet.js";
+
+  const balanceElement = document.getElementById("balance");
+
+  if (balanceElement) {
+    balanceElement.textContent = formatPeso(getBalance());
+  }
+</script>
+
 </body>
 </html>
