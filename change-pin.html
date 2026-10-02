@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Change PIN - PeraGo</title>
+  <link rel="stylesheet" href="auth.css">
+
+  <style>
+    body {
+      background: #f4f7fb;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 18px;
+      color: #1677ff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="auth-page">
+
+    <div class="auth-brand">
+      <div class="brand-icon">P</div>
+      <h1>PeraGo</h1>
+      <p>Account security</p>
+    </div>
+
+    <div class="auth-card">
+
+      <a class="back-link" href="profile.html">← Back to Profile</a>
+
+      <div class="auth-heading">
+        <h2>Change PIN</h2>
+        <p>Update your 6-digit PeraGo PIN.</p>
+      </div>
+
+      <div class="input-group">
+        <label for="currentPin">Current PIN</label>
+        <input
+          class="otp-input"
+          type="password"
+          id="currentPin"
+          maxlength="6"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="••••••"
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="newPin">New PIN</label>
+        <input
+          class="otp-input"
+          type="password"
+          id="newPin"
+          maxlength="6"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="••••••"
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="confirmPin">Confirm New PIN</label>
+        <input
+          class="otp-input"
+          type="password"
+          id="confirmPin"
+          maxlength="6"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="••••••"
+        >
+      </div>
+
+      <button class="primary-btn" id="changePinBtn" type="button">
+        Change PIN
+      </button>
+
+      <div id="pinMessage" class="auth-message"></div>
+
+    </div>
+
+    <p class="footer-text">
+      PeraGo Demo Wallet
+    </p>
+
+  </div>
+
+  <script type="module">
+    import { checkPin, savePin } from "./pin.js";
+
+    const currentPin = document.getElementById("currentPin");
+    const newPin = document.getElementById("newPin");
+    const confirmPin = document.getElementById("confirmPin");
+    const button = document.getElementById("changePinBtn");
+    const message = document.getElementById("pinMessage");
+
+    button.addEventListener("click", () => {
+
+      const current = currentPin.value.trim();
+      const newValue = newPin.value.trim();
+      const confirmValue = confirmPin.value.trim();
+
+      if (!/^\d{6}$/.test(current)) {
+        message.textContent = "Enter your current 6-digit PIN.";
+        return;
+      }
+
+      if (!checkPin(current)) {
+        message.textContent = "Current PIN is incorrect.";
+        return;
+      }
+
+      if (!/^\d{6}$/.test(newValue)) {
+        message.textContent = "New PIN must be exactly 6 digits.";
+        return;
+      }
+
+      if (newValue !== confirmValue) {
+        message.textContent = "New PINs do not match.";
+        return;
+      }
+
+      if (current === newValue) {
+        message.textContent = "New PIN must be different from your current PIN.";
+        return;
+      }
+
+      savePin(newValue);
+
+      message.textContent = "PIN changed successfully.";
+
+      currentPin.value = "";
+      newPin.value = "";
+      confirmPin.value = "";
+
+      setTimeout(() => {
+        window.location.href = "profile.html";
+      }, 800);
+    });
+  </script>
+
+</body>
+</html>
