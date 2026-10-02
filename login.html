@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#1264e8"><title>PeraGo — Login</title>
+<link rel="stylesheet" href="auth.css"></head>
+<body><main class="auth-shell"><section class="auth-card">
+<div class="brand"><b class="brand-p">P</b><span>Pera<span>Go</span></span></div>
+<p class="eyebrow">WELCOME BACK</p><h1>Login to PeraGo</h1>
+<p class="subtitle">Use your mobile number and 6-digit PIN.</p>
+<form id="loginForm">
+<label>Mobile Number</label><input id="mobile" type="tel" inputmode="numeric" maxlength="11" placeholder="09XXXXXXXXX" required>
+<label>6-Digit PIN</label><div class="pin-wrap"><input id="pin" type="password" inputmode="numeric" maxlength="6" placeholder="••••••" required><button type="button" id="togglePin">Show</button></div>
+<button class="primary">Login</button><p class="message" id="message"></p></form>
+<p class="switch">Don't have an account? <a href="register.html">Create Account</a></p>
+</section></main><script src="auth.js"></script></body></html>
