@@ -1,5 +1,5 @@
 export const firebaseConfig = {
-  apiKey: "AIzaSyDMrZC26RyVNZ6wMbA8c2FSYdQ6exyEk4M",
+  apiKey: "AIzaSyDMrZC26RyVNZ6wMbA8c2FSYd6QexyEk4M",
   authDomain: "perago-1d346.firebaseapp.com",
   projectId: "perago-1d346",
   storageBucket: "perago-1d346.firebasestorage.app",
