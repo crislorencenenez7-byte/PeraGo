@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - PeraGo</title>
+  <link rel="stylesheet" href="auth.css">
+
+  <style>
+    body {
+      background: #f4f7fb;
+    }
+
+    .profile-icon {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      background: #eaf2ff;
+      color: #1677ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .profile-info {
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+
+    .profile-row {
+      padding: 12px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .profile-row:last-child {
+      border-bottom: none;
+    }
+
+    .profile-label {
+      display: block;
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .profile-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .danger-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #fee2e2;
+      color: #dc2626;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="auth-page">
+
+    <div class="auth-brand">
+      <div class="profile-icon">P</div>
+      <h1>PeraGo</h1>
+      <p>Your account</p>
+    </div>
+
+    <div class="auth-card">
+
+      <div class="auth-heading">
+        <h2>Profile</h2>
+        <p>Manage your PeraGo account.</p>
+      </div>
+
+      <div class="profile-info">
+
+        <div class="profile-row">
+          <span class="profile-label">Mobile Number</span>
+          <span class="profile-value" id="phoneNumber">
+            Loading...
+          </span>
+        </div>
+
+        <div class="profile-row">
+          <span class="profile-label">Account Status</span>
+          <span class="profile-value">Verified</span>
+        </div>
+
+      </div>
+
+      <button class="danger-btn" id="logoutBtn" type="button">
+        Logout
+      </button>
+
+      <div id="profileMessage" class="auth-message"></div>
+
+    </div>
+
+    <p class="footer-text">
+      PeraGo Demo Wallet
+    </p>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    import { firebaseConfig } from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const phoneNumber = document.getElementById("phoneNumber");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const message = document.getElementById("profileMessage");
+
+    onAuthStateChanged(auth, (user) => {
+
+      if (!user) {
+        window.location.replace("login.html");
+        return;
+      }
+
+      phoneNumber.textContent =
+        user.phoneNumber || "Mobile number unavailable";
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+
+      logoutBtn.disabled = true;
+      message.textContent = "Logging out...";
+
+      try {
+        await signOut(auth);
+
+        sessionStorage.removeItem("perago_unlocked");
+
+        window.location.replace("login.html");
+
+      } catch (error) {
+
+        console.error(error);
+
+        message.textContent = "Logout failed.";
+        logoutBtn.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
