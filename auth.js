@@ -91,7 +91,7 @@ if (verifyOtpButton) {
       showMessage("Verified successfully!");
 
       setTimeout(() => {
-        window.location.href = "index.html";
+        window.location.href = "set-pin.html";
       }, 500);
     } else {
       showMessage("Verification failed: " + result.message);
