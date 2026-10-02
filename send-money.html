@@ -26,10 +26,49 @@
       outline:none;
     }
     .amount-input:focus { border-color:#1677ff; }
+    .confirm-box {
+      display:none;
+      margin-top:20px;
+      padding:16px;
+      border-radius:14px;
+      background:#f1f6ff;
+    }
+    .confirm-row {
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin:8px 0;
+    }
+    .confirm-row strong { color:#111827; }
+    .confirm-buttons {
+      display:flex;
+      gap:10px;
+      margin-top:16px;
+    }
+    .cancel-btn {
+      flex:1;
+      padding:14px;
+      border:0;
+      border-radius:12px;
+      background:#e5e7eb;
+      color:#374151;
+      font-weight:700;
+    }
+    .confirm-btn {
+      flex:1;
+      padding:14px;
+      border:0;
+      border-radius:12px;
+      background:#1677ff;
+      color:white;
+      font-weight:700;
+    }
   </style>
 </head>
+
 <body>
   <div class="auth-page">
+
     <div class="auth-brand">
       <div class="brand-icon">P</div>
       <h1>PeraGo</h1>
@@ -37,6 +76,7 @@
     </div>
 
     <div class="auth-card">
+
       <a class="back-link" href="index.html">← Back to Home</a>
 
       <div class="auth-heading">
@@ -44,37 +84,75 @@
         <p>Send demo funds to another mobile number.</p>
       </div>
 
-      <div class="input-group">
-        <label for="recipient">Recipient Mobile Number</label>
-        <input
-          type="tel"
-          id="recipient"
-          placeholder="9XXXXXXXXX"
-          inputmode="numeric"
-        >
+      <div id="formSection">
+
+        <div class="input-group">
+          <label for="recipient">Recipient Mobile Number</label>
+          <input
+            type="tel"
+            id="recipient"
+            placeholder="9XXXXXXXXX"
+            inputmode="numeric"
+            maxlength="10"
+          >
+        </div>
+
+        <div class="input-group">
+          <label for="amount">Amount</label>
+          <input
+            class="amount-input"
+            type="number"
+            id="amount"
+            min="1"
+            step="0.01"
+            inputmode="decimal"
+            placeholder="0.00"
+          >
+        </div>
+
+        <button class="primary-btn" id="continueBtn" type="button">
+          Continue
+        </button>
+
       </div>
 
-      <div class="input-group">
-        <label for="amount">Amount</label>
-        <input
-          class="amount-input"
-          type="number"
-          id="amount"
-          min="1"
-          step="0.01"
-          inputmode="decimal"
-          placeholder="0.00"
-        >
-      </div>
+      <div id="confirmBox" class="confirm-box">
 
-      <button class="primary-btn" id="sendBtn" type="button">
-        Send Demo Money
-      </button>
+        <h3>Confirm Transfer</h3>
+
+        <div class="confirm-row">
+          <span>Recipient</span>
+          <strong id="confirmRecipient"></strong>
+        </div>
+
+        <div class="confirm-row">
+          <span>Amount</span>
+          <strong id="confirmAmount"></strong>
+        </div>
+
+        <div class="confirm-row">
+          <span>Available Balance</span>
+          <strong id="confirmBalance"></strong>
+        </div>
+
+        <div class="confirm-buttons">
+          <button class="cancel-btn" id="cancelBtn" type="button">
+            Cancel
+          </button>
+
+          <button class="confirm-btn" id="confirmBtn" type="button">
+            Confirm
+          </button>
+        </div>
+
+      </div>
 
       <div id="sendMessage" class="auth-message"></div>
+
     </div>
 
     <p class="footer-text">Demo only — no real money is sent.</p>
+
   </div>
 
   <script type="module">
@@ -87,27 +165,75 @@
 
     const recipientInput = document.getElementById("recipient");
     const amountInput = document.getElementById("amount");
-    const sendBtn = document.getElementById("sendBtn");
-    const message = document.getElementById("sendMessage");
 
-    sendBtn.addEventListener("click", () => {
+    const formSection = document.getElementById("formSection");
+    const confirmBox = document.getElementById("confirmBox");
+
+    const continueBtn = document.getElementById("continueBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const confirmBtn = document.getElementById("confirmBtn");
+
+    const confirmRecipient =
+      document.getElementById("confirmRecipient");
+
+    const confirmAmount =
+      document.getElementById("confirmAmount");
+
+    const confirmBalance =
+      document.getElementById("confirmBalance");
+
+    const message =
+      document.getElementById("sendMessage");
+
+    continueBtn.addEventListener("click", () => {
+
       const recipient = recipientInput.value.trim();
       const amount = Number(amountInput.value);
       const balance = getBalance();
 
       if (!/^9\d{9}$/.test(recipient)) {
-        message.textContent = "Enter a valid Philippine mobile number.";
+        message.textContent =
+          "Enter a valid Philippine mobile number.";
         return;
       }
 
       if (!Number.isFinite(amount) || amount <= 0) {
-        message.textContent = "Enter a valid amount.";
+        message.textContent =
+          "Enter a valid amount.";
         return;
       }
 
       if (amount > balance) {
         message.textContent =
-          "Insufficient balance. Available: " + formatPeso(balance);
+          "Insufficient balance. Available: " +
+          formatPeso(balance);
+        return;
+      }
+
+      confirmRecipient.textContent = "+63" + recipient;
+      confirmAmount.textContent = formatPeso(amount);
+      confirmBalance.textContent = formatPeso(balance);
+
+      message.textContent = "";
+
+      formSection.style.display = "none";
+      confirmBox.style.display = "block";
+    });
+
+    cancelBtn.addEventListener("click", () => {
+      confirmBox.style.display = "none";
+      formSection.style.display = "block";
+    });
+
+    confirmBtn.addEventListener("click", () => {
+
+      const recipient = recipientInput.value.trim();
+      const amount = Number(amountInput.value);
+      const balance = getBalance();
+
+      if (amount > balance) {
+        message.textContent =
+          "Insufficient balance.";
         return;
       }
 
@@ -122,10 +248,11 @@
       });
 
       message.textContent =
-        "Sent " + formatPeso(amount) + " to +63" + recipient + ".";
+        "Transfer successful! Sent " +
+        formatPeso(amount) +
+        " to +63" + recipient + ".";
 
-      recipientInput.value = "";
-      amountInput.value = "";
+      confirmBtn.disabled = true;
 
       setTimeout(() => {
         window.location.href = "index.html";
