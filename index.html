@@ -81,5 +81,11 @@
   <div class="toast" id="toast"></div>
   <script src="script.js"></script>
   <script type="module" src="session.js"></script>
-</body>
+
+<script>
+  if (sessionStorage.getItem("perago_unlocked") !== "true") {
+    window.location.replace("pin-lock.html");
+  }
+</script>
+\n</body>
 </html>
