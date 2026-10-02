@@ -1,1 +1,101 @@
-const pin=document.getElementById("pin"),toggle=document.getElementById("togglePin"),message=document.getElementById("message");if(toggle&&pin)toggle.onclick=()=>{const h=pin.type==="password";pin.type=h?"text":"password";toggle.textContent=h?"Hide":"Show"};const validMobile=v=>/^09\d{9}$/.test(v);const show=(t)=>{message.textContent=t;message.style.color="#1264e8"};document.getElementById("loginForm")?.addEventListener("submit",e=>{e.preventDefault();const m=document.getElementById("mobile").value.trim(),p=pin.value.trim();if(!validMobile(m))return message.textContent="Enter a valid 11-digit mobile number.";if(!/^\d{6}$/.test(p))return message.textContent="PIN must be exactly 6 digits.";show("Login UI ready. Firebase authentication comes next.")});document.getElementById("registerForm")?.addEventListener("submit",e=>{e.preventDefault();const m=document.getElementById("mobile").value.trim(),p=pin.value.trim(),c=document.getElementById("confirmPin").value.trim();if(!document.getElementById("name").value.trim())return message.textContent="Enter your full name.";if(!validMobile(m))return message.textContent="Enter a valid 11-digit mobile number.";if(!/^\d{6}$/.test(p))return message.textContent="PIN must be exactly 6 digits.";if(p!==c)return message.textContent="PINs do not match.";show("Registration UI ready. Firebase authentication comes next.")});
+import "./firebase-auth.js";
+
+const phoneInput =
+  document.querySelector("#phone") ||
+  document.querySelector("#phoneNumber") ||
+  document.querySelector("#mobile");
+
+const otpInput =
+  document.querySelector("#otp") ||
+  document.querySelector("#otpCode");
+
+const sendOtpButton =
+  document.querySelector("#sendOtpBtn") ||
+  document.querySelector("#sendOTP") ||
+  document.querySelector("#send-otp");
+
+const verifyOtpButton =
+  document.querySelector("#verifyOtpBtn") ||
+  document.querySelector("#verifyOTP") ||
+  document.querySelector("#verify-otp");
+
+const message =
+  document.querySelector("#authMessage") ||
+  document.querySelector("#message");
+
+function showMessage(text) {
+  if (message) {
+    message.textContent = text;
+  } else {
+    alert(text);
+  }
+}
+
+if (sendOtpButton) {
+  sendOtpButton.addEventListener("click", async () => {
+    if (!phoneInput) {
+      showMessage("Phone number field not found.");
+      return;
+    }
+
+    const phone = phoneInput.value.trim();
+
+    if (!phone) {
+      showMessage("Enter your mobile number first.");
+      return;
+    }
+
+    sendOtpButton.disabled = true;
+    showMessage("Sending OTP...");
+
+    const result = await window.sendOTP(phone);
+
+    if (result.success) {
+      showMessage("OTP sent. Check your SMS.");
+
+      if (otpInput) {
+        otpInput.style.display = "block";
+        otpInput.focus();
+      }
+
+      if (verifyOtpButton) {
+        verifyOtpButton.style.display = "block";
+      }
+    } else {
+      showMessage("OTP failed: " + result.message);
+      sendOtpButton.disabled = false;
+    }
+  });
+}
+
+if (verifyOtpButton) {
+  verifyOtpButton.addEventListener("click", async () => {
+    if (!otpInput) {
+      showMessage("OTP field not found.");
+      return;
+    }
+
+    const otp = otpInput.value.trim();
+
+    if (!/^\d{6}$/.test(otp)) {
+      showMessage("Enter the 6-digit OTP.");
+      return;
+    }
+
+    verifyOtpButton.disabled = true;
+    showMessage("Verifying OTP...");
+
+    const result = await window.verifyOTP(otp);
+
+    if (result.success) {
+      showMessage("Verified successfully!");
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 500);
+    } else {
+      showMessage("Verification failed: " + result.message);
+      verifyOtpButton.disabled = false;
+    }
+  });
+}
