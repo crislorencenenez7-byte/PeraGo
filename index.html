@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1264e8" />
+  <title>PeraGo — Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-mark">P</div>
+          <div>
+            <div class="brand-name">Pera<span>Go</span></div>
+            <div class="tagline">Mas mabilis. Mas madali.</div>
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <button class="icon-btn" aria-label="Notifications">🔔<span class="dot"></span></button>
+          <button class="avatar" aria-label="Profile">👤</button>
+        </div>
+      </div>
+
+      <section class="balance-card">
+        <div>
+          <p class="balance-label">Available Balance</p>
+          <h1 id="balance">₱0.00</h1>
+          <button class="balance-toggle" id="toggleBalance">◉ View Balance</button>
+        </div>
+        <div class="wallet-icon">₱</div>
+      </section>
+    </header>
+
+    <main>
+      <section class="quick-actions">
+        <button class="action" data-action="Send Money">
+          <span class="action-icon blue">➤</span><span>Send Money</span>
+        </button>
+        <button class="action" data-action="Receive Money">
+          <span class="action-icon green">↓</span><span>Receive Money</span>
+        </button>
+        <button class="action" data-action="Scan QR">
+          <span class="action-icon purple">▦</span><span>Scan QR</span>
+        </button>
+        <button class="action" data-action="Cash In">
+          <span class="action-icon orange">▣</span><span>Cash In</span>
+        </button>
+      </section>
+
+      <section class="card transactions-card">
+        <div class="section-heading">
+          <h2>Recent Transactions</h2>
+          <button id="seeAll">See All ›</button>
+        </div>
+        <div id="transactions"></div>
+      </section>
+
+      <section class="qr-banner">
+        <div class="qr-symbol">▦</div>
+        <div>
+          <h2>Pay with QR</h2>
+          <p>Fast. Safe. Convenient.</p>
+        </div>
+        <button id="learnMore">Learn More ›</button>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-page="Home"><span>⌂</span><small>Home</small></button>
+      <button class="nav-item" data-page="Send"><span>➤</span><small>Send</small></button>
+      <button class="nav-item qr-main" data-page="QR"><span>▦</span><small>QR</small></button>
+      <button class="nav-item" data-page="Transactions"><span>◷</span><small>Transactions</small></button>
+      <button class="nav-item" data-page="Profile"><span>♙</span><small>Profile</small></button>
+    </nav>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
