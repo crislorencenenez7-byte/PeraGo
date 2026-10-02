@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Set PIN - PeraGo</title>
+  <link rel="stylesheet" href="auth.css">
+</head>
+
+<body>
+
+  <div class="auth-page">
+
+    <div class="auth-brand">
+      <div class="brand-icon">P</div>
+      <h1>PeraGo</h1>
+      <p>Secure your wallet</p>
+    </div>
+
+    <div class="auth-card">
+
+      <div class="auth-heading">
+        <h2>Create your PIN</h2>
+        <p>Set a 6-digit PIN for your PeraGo demo wallet.</p>
+      </div>
+
+      <div class="input-group">
+        <label for="pin">6-Digit PIN</label>
+        <input
+          class="otp-input"
+          type="password"
+          id="pin"
+          maxlength="6"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="••••••"
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="confirmPin">Confirm PIN</label>
+        <input
+          class="otp-input"
+          type="password"
+          id="confirmPin"
+          maxlength="6"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="••••••"
+        >
+      </div>
+
+      <button class="primary-btn" id="savePinBtn" type="button">
+        Continue
+      </button>
+
+      <div id="pinMessage" class="auth-message"></div>
+
+    </div>
+
+    <p class="footer-text">
+      PeraGo is a demo wallet. Do not use real financial information.
+    </p>
+
+  </div>
+
+  <script type="module">
+    import { savePin } from "./pin.js";
+
+    const pin = document.getElementById("pin");
+    const confirmPin = document.getElementById("confirmPin");
+    const button = document.getElementById("savePinBtn");
+    const message = document.getElementById("pinMessage");
+
+    button.addEventListener("click", () => {
+
+      const pinValue = pin.value.trim();
+      const confirmValue = confirmPin.value.trim();
+
+      if (!/^\d{6}$/.test(pinValue)) {
+        message.textContent = "PIN must be exactly 6 digits.";
+        return;
+      }
+
+      if (pinValue !== confirmValue) {
+        message.textContent = "PINs do not match.";
+        return;
+      }
+
+      savePin(pinValue);
+
+      message.textContent = "PIN created successfully!";
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 700);
+    });
+  </script>
+
+</body>
+</html>
