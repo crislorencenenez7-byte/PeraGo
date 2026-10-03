@@ -39,7 +39,7 @@
 
     <main>
       <section style="padding: 0 16px 14px;">
-        <button id="installAppBtn" type="button" style="width:100%;padding:14px;border:0;border-radius:14px;background:#1264e8;color:#fff;font-size:16px;font-weight:700;box-shadow:0 6px 18px rgba(18,100,232,.22);cursor:pointer;">📲 Install PeraGo</button>
+        <button id="installAppBtn" type="button" style="display:none;" style="display:none;" style="width:100%;padding:14px;border:0;border-radius:14px;background:#1264e8;color:#fff;font-size:16px;font-weight:700;box-shadow:0 6px 18px rgba(18,100,232,.22);cursor:pointer;">📲 Install PeraGo</button>
       </section>
       <section class="quick-actions">
         <button class="action" data-action="Send Money" onclick="window.location.href='send-money.html'">
@@ -130,6 +130,7 @@
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     deferredInstallPrompt = event;
+    if (installBtn) installBtn.style.display = "block";
   });
 
   installBtn?.addEventListener("click", async () => {
