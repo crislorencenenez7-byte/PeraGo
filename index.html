@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#1264e8" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.svg" type="image/svg+xml" />
   <title>PeraGo — Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -36,6 +38,9 @@
     </header>
 
     <main>
+      <section style="padding: 0 16px 14px;">
+        <button id="installAppBtn" type="button" style="width:100%;padding:14px;border:0;border-radius:14px;background:#1264e8;color:#fff;font-size:16px;font-weight:700;box-shadow:0 6px 18px rgba(18,100,232,.22);cursor:pointer;">📲 Install PeraGo</button>
+      </section>
       <section class="quick-actions">
         <button class="action" data-action="Send Money" onclick="window.location.href='send-money.html'">
           <span class="action-icon blue">➤</span><span>Send Money</span>
@@ -118,6 +123,31 @@
   }
 </script>
 
+<script>
+  let deferredInstallPrompt = null;
+  const installBtn = document.getElementById("installAppBtn");
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+  });
+
+  installBtn?.addEventListener("click", async () => {
+    if (!deferredInstallPrompt) {
+      alert("PeraGo cannot be installed from this browser yet. Try Chrome menu ⋮ → Install app or Add to Home screen.");
+      return;
+    }
+
+    deferredInstallPrompt.prompt();
+    const result = await deferredInstallPrompt.userChoice;
+    console.log("Install result:", result.outcome);
+    deferredInstallPrompt = null;
+  });
+
+  window.addEventListener("appinstalled", () => {
+    installBtn?.remove();
+  });
+</script>
 </body>
 </html>
 
