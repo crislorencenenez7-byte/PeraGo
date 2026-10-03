@@ -207,7 +207,31 @@
 
   </main>
 
-  <script type="module">
+  <div id="account-navigation" style="
+  width:100%;
+  text-align:center;
+  margin:20px 0;
+  padding:0 16px;
+  box-sizing:border-box;
+">
+  <button
+    id="registerBtn"
+    type="button"
+    onclick="location.href='register.html'"
+    style="
+      display:inline-block;
+      border:0;
+      background:none;
+      color:#1264e8;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      padding:12px;
+    "
+  >Don't have an account? Register</button>
+</div>
+
+<script type="module">
 
     import { checkPin } from "./pin.js";
 
@@ -299,29 +323,7 @@
   </script>
 
 
-<div id="account-navigation" style="
-  width:100%;
-  text-align:center;
-  margin:20px 0;
-  padding:0 16px;
-  box-sizing:border-box;
-">
-  <button
-    id="registerBtn"
-    type="button"
-    onclick="location.href='register.html'"
-    style="
-      display:inline-block;
-      border:0;
-      background:none;
-      color:#1264e8;
-      font-size:14px;
-      font-weight:700;
-      cursor:pointer;
-      padding:12px;
-    "
-  >Don't have an account? Register</button>
-</div>
+
 
 </body>
 </html>
