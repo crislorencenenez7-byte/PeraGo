@@ -1,4 +1,4 @@
-const CACHE_NAME = "perago-v12";
+const CACHE_NAME = "perago-v13";
 
 const APP_FILES = [
   "./",
@@ -9,7 +9,6 @@ const APP_FILES = [
   "./reset-pin.html",
   "./set-pin.html",
   "./send-money.html",
-  "./cash-in.html",
   "./qr.html",
   "./profile.html",
   "./change-pin.html",

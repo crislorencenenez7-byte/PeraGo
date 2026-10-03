@@ -38,7 +38,6 @@ function renderTransactions() {
     let sub = "";
 
     if (tx.type === "cash_in") {
-      sub = "Demo Cash In";
     } else if (tx.type === "send") {
       sub = "To " + (tx.recipient || "Recipient");
     } else {
