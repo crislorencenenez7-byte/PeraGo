@@ -1,4 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+
 import {
   getFirestore,
   doc,
@@ -25,7 +26,7 @@ export async function createWalletProfile(user) {
     await setDoc(userRef, {
       uid: user.uid,
       phoneNumber: user.phoneNumber || "",
-      balance: 0,
+      balance: 1000,
       createdAt: new Date().toISOString()
     });
 
@@ -50,7 +51,7 @@ onAuthStateChanged(auth, async (user) => {
   try {
     await createWalletProfile(user);
   } catch (error) {
-    console.error("Wallet profile error:", error); 
+    console.error("Wallet profile error:", error);
   }
 });
 
