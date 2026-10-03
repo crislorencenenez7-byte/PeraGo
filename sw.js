@@ -1,4 +1,4 @@
-const CACHE_NAME = "perago-v2";
+const CACHE_NAME = "perago-v3";
 
 const APP_FILES = [
   "./",
@@ -12,8 +12,18 @@ const APP_FILES = [
   "./pin.js",
   "./wallet.js",
   "./manifest.json",
-  "./icon-192.svg",
-  "./icon-512.svg"
+  "./register.html",
+  "./pin-lock.html",
+  "./forgot-pin.html",
+  "./reset-pin.html",
+  "./set-pin.html",
+  "./send-money.html",
+  "./cash-in.html",
+  "./qr.html",
+  "./profile.html",
+  "./change-pin.html",
+  "./icon-192.png",
+  "./icon-512.png",
 ];
 
 self.addEventListener("install", event => {
