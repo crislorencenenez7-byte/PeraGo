@@ -2,87 +2,296 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1264e8">
   <title>Enter PIN - PeraGo</title>
+
   <link rel="stylesheet" href="auth.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      background: #f4f7fb;
+    }
+
+    .pin-page {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 18px;
+    }
+
+    .pin-brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .pin-brand .brand-icon {
+      margin: 0 auto 12px;
+    }
+
+    .pin-brand h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .pin-brand p {
+      margin: 6px 0 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .pin-card {
+      width: 100%;
+      max-width: 390px;
+      background: #fff;
+      border-radius: 28px;
+      padding: 28px 20px 24px;
+      box-shadow: 0 12px 35px rgba(0,0,0,.08);
+      text-align: center;
+    }
+
+    .pin-card h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .pin-card .subtitle {
+      margin: 7px 0 22px;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .pin-dots {
+      display: flex;
+      justify-content: center;
+      gap: 13px;
+      margin: 18px 0 24px;
+    }
+
+    .pin-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #dbe3ef;
+      transition: .15s ease;
+    }
+
+    .pin-dot.filled {
+      background: #1264e8;
+      transform: scale(1.05);
+    }
+
+    .pin-message {
+      min-height: 22px;
+      margin-bottom: 14px;
+      color: #dc2626;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    .key {
+      height: 62px;
+      border: 0;
+      border-radius: 18px;
+      background: #f4f7fb;
+      color: #172033;
+      font-size: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .key:active {
+      transform: scale(.94);
+      background: #e7eefb;
+    }
+
+    .key.zero {
+      grid-column: 2;
+    }
+
+    .key.delete {
+      grid-column: 3;
+      background: transparent;
+      color: #1264e8;
+      font-size: 24px;
+    }
+
+    .key.delete:active {
+      background: #eef5ff;
+    }
+
+    .footer-text {
+      margin-top: 22px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 12px;
+    }
+  </style>
 </head>
 
 <body>
 
-  <div class="auth-page">
+  <main class="pin-page">
 
-    <div class="auth-brand">
+    <div class="pin-brand">
       <div class="brand-icon">P</div>
       <h1>PeraGo</h1>
       <p>Your digital wallet</p>
     </div>
 
-    <div class="auth-card">
+    <section class="pin-card">
 
-      <div class="auth-heading">
-        <h2>Enter your PIN</h2>
-        <p>Enter your 6-digit PIN to continue.</p>
+      <h2>Enter your PIN</h2>
+      <p class="subtitle">Enter your 6-digit PIN to continue.</p>
+
+      <div class="pin-dots" id="pinDots">
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
       </div>
 
-      <div class="input-group">
-        <label for="pin">6-Digit PIN</label>
+      <div class="pin-message" id="pinMessage"></div>
 
-        <input
-          class="otp-input"
-          type="password"
-          id="pin"
-          maxlength="6"
-          inputmode="numeric"
-          autocomplete="off"
-          placeholder="••••••"
-        >
+      <div class="keypad">
+
+        <button class="key" data-key="1">1</button>
+        <button class="key" data-key="2">2</button>
+        <button class="key" data-key="3">3</button>
+
+        <button class="key" data-key="4">4</button>
+        <button class="key" data-key="5">5</button>
+        <button class="key" data-key="6">6</button>
+
+        <button class="key" data-key="7">7</button>
+        <button class="key" data-key="8">8</button>
+        <button class="key" data-key="9">9</button>
+
+        <button class="key zero" data-key="0">0</button>
+
+        <button class="key delete" id="deleteBtn" type="button">
+          ⌫
+        </button>
+
       </div>
 
-      <button class="primary-btn" id="unlockBtn" type="button">
-        Unlock
-      </button>
+    </section>
 
-      <div id="pinMessage" class="auth-message"></div>
+    <p class="footer-text">
+      PeraGo Demo Wallet
+    </p>
 
-    </div>
-
-  </div>
+  </main>
 
   <script type="module">
+
     import { checkPin } from "./pin.js";
 
-    const pinInput = document.getElementById("pin");
-    const unlockBtn = document.getElementById("unlockBtn");
+    let enteredPin = "";
+
+    const dots = document.querySelectorAll(".pin-dot");
     const message = document.getElementById("pinMessage");
+    const deleteBtn = document.getElementById("deleteBtn");
 
-    unlockBtn.addEventListener("click", () => {
+    function updateDots() {
 
-      const pin = pinInput.value.trim();
+      dots.forEach((dot, index) => {
+        dot.classList.toggle(
+          "filled",
+          index < enteredPin.length
+        );
+      });
 
-      if (!/^\d{6}$/.test(pin)) {
-        message.textContent = "Enter your 6-digit PIN.";
+    }
+
+    function clearPin() {
+      enteredPin = "";
+      updateDots();
+    }
+
+    function unlock() {
+
+      if (enteredPin.length !== 6) {
         return;
       }
 
-      if (checkPin(pin)) {
+      if (checkPin(enteredPin)) {
 
+        message.style.color = "#16a34a";
         message.textContent = "Unlocked!";
 
-        sessionStorage.setItem("perago_unlocked", "true");
+        sessionStorage.setItem(
+          "perago_unlocked",
+          "true"
+        );
 
         setTimeout(() => {
           window.location.href = "index.html";
-        }, 400);
+        }, 350);
 
       } else {
 
+        message.style.color = "#dc2626";
         message.textContent = "Incorrect PIN.";
-        pinInput.value = "";
-        pinInput.focus();
+
+        clearPin();
 
       }
 
+    }
+
+    document.querySelectorAll("[data-key]").forEach(button => {
+
+      button.addEventListener("click", () => {
+
+        if (enteredPin.length >= 6) {
+          return;
+        }
+
+        enteredPin += button.dataset.key;
+
+        message.textContent = "";
+
+        updateDots();
+
+        if (enteredPin.length === 6) {
+          setTimeout(unlock, 120);
+        }
+
+      });
+
     });
+
+    deleteBtn.addEventListener("click", () => {
+
+      if (enteredPin.length > 0) {
+        enteredPin = enteredPin.slice(0, -1);
+        message.textContent = "";
+        updateDots();
+      }
+
+    });
+
   </script>
 
 </body>
