@@ -1,4 +1,4 @@
-const CACHE_NAME = "perago-v19";
+const CACHE_NAME = "perago-v20";
 
 const APP_FILES = [
   "./",
