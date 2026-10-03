@@ -11,6 +11,7 @@ import {
   where,
   limit,
   getDocs,
+  runTransaction,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
@@ -152,33 +153,62 @@ export async function createTransferRequest(
     throw new Error("Enter a valid amount.");
   }
 
-  const wallet = await getCurrentWallet();
-  const balance = Number(wallet.balance);
+  const senderRef = doc(db, "users", sender.uid);
+  const recipientRef = doc(db, "users", recipientUid);
 
-  if (!Number.isFinite(balance)) {
-    throw new Error("Wallet balance is invalid.");
-  }
+  const requestId = await runTransaction(db, async (transaction) => {
+    const senderSnap = await transaction.get(senderRef);
+    const recipientSnap = await transaction.get(recipientRef);
 
-  if (value > balance) {
-    throw new Error(
-      `Insufficient balance. Available balance: ${formatPeso(balance)}`
-    );
-  }
+    if (!senderSnap.exists()) {
+      throw new Error("Sender wallet not found.");
+    }
 
-  const requestRef = await addDoc(
-    collection(db, "transferRequests"),
-    {
+    if (!recipientSnap.exists()) {
+      throw new Error("Recipient wallet not found.");
+    }
+
+    const senderBalance = Number(senderSnap.data().balance);
+    const recipientBalance = Number(recipientSnap.data().balance);
+
+    if (!Number.isFinite(senderBalance)) {
+      throw new Error("Sender wallet balance is invalid.");
+    }
+
+    if (!Number.isFinite(recipientBalance)) {
+      throw new Error("Recipient wallet balance is invalid.");
+    }
+
+    if (value > senderBalance) {
+      throw new Error(
+        `Insufficient balance. Available balance: ${formatPeso(senderBalance)}`
+      );
+    }
+
+    const requestRef = doc(collection(db, "transferRequests"));
+
+    transaction.update(senderRef, {
+      balance: senderBalance - value
+    });
+
+    transaction.update(recipientRef, {
+      balance: recipientBalance + value
+    });
+
+    transaction.set(requestRef, {
       senderUid: sender.uid,
       senderPhone: sender.phoneNumber || "",
       recipientUid,
       recipientPhone: recipientPhone || "",
       amount: value,
-      status: "pending",
+      status: "completed",
       createdAt: serverTimestamp()
-    }
-  );
+    });
 
-  return requestRef.id;
+    return requestRef.id;
+  });
+
+  return requestId;
 }
 
 onAuthStateChanged(auth, async (user) => {
