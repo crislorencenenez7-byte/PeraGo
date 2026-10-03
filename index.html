@@ -148,6 +148,14 @@
     installBtn?.remove();
   });
 </script>
+<script>
+  const installButton = document.getElementById("installAppBtn");
+  const isInstalledApp = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+  if (isInstalledApp && installButton) {
+    installButton.style.display = "none";
+  }
+</script>
 </body>
 </html>
 
