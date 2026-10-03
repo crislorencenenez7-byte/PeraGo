@@ -2,180 +2,163 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
   <title>Send Money - PeraGo</title>
-  <link rel="stylesheet" href="auth.css">
-  <style>
-    body { background:#f4f7fb; }
-    .back-link {
-      display:inline-block;
-      margin-bottom:18px;
-      color:#1677ff;
-      text-decoration:none;
-      font-weight:600;
-    }
-    .amount-input {
-      width:100%;
-      box-sizing:border-box;
-      padding:16px;
-      border:1px solid #dbe3ef;
-      border-radius:12px;
-      font-size:24px;
-      font-weight:700;
-      text-align:center;
-      outline:none;
-    }
-    .amount-input:focus { border-color:#1677ff; }
-    .confirm-box {
-      display:none;
-      margin-top:20px;
-      padding:16px;
-      border-radius:14px;
-      background:#f1f6ff;
-    }
-    .confirm-row {
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      margin:8px 0;
-    }
-    .confirm-row strong { color:#111827; }
-    .confirm-buttons {
-      display:flex;
-      gap:10px;
-      margin-top:16px;
-    }
-    .cancel-btn {
-      flex:1;
-      padding:14px;
-      border:0;
-      border-radius:12px;
-      background:#e5e7eb;
-      color:#374151;
-      font-weight:700;
-    }
-    .confirm-btn {
-      flex:1;
-      padding:14px;
-      border:0;
-      border-radius:12px;
-      background:#1677ff;
-      color:white;
-      font-weight:700;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
-  <div class="auth-page">
 
-    <div class="auth-brand">
-      <div class="brand-icon">P</div>
-      <h1>PeraGo</h1>
-      <p>Demo Wallet</p>
-    </div>
+  <main class="page">
 
-    <div class="auth-card">
+    <header class="page-header">
+      <button
+        type="button"
+        onclick="history.back()"
+        class="back-btn"
+      >
+        ←
+      </button>
 
-      <a class="back-link" href="index.html">← Back to Home</a>
+      <h1>Send Money</h1>
+    </header>
 
-      <div class="auth-heading">
-        <h2>Send Money</h2>
-        <p>Send demo funds to another mobile number.</p>
+    <section id="formSection" class="card">
+
+      <div class="input-group">
+        <label for="recipient">
+          Recipient Mobile Number
+        </label>
+
+        <input
+          id="recipient"
+          type="tel"
+          inputmode="numeric"
+          autocomplete="tel"
+          placeholder="09XXXXXXXXX"
+        >
+
+        <small>
+          Enter the mobile number registered with PeraGo.
+        </small>
       </div>
 
-      <div id="formSection">
+      <div class="input-group">
+        <label for="amount">
+          Amount
+        </label>
 
-        <div class="input-group">
-          <label for="recipient">Recipient Mobile Number</label>
-          <input
-            type="tel"
-            id="recipient"
-            placeholder="9XXXXXXXXX"
-            inputmode="numeric"
-            maxlength="13"
-          >
-        </div>
+        <input
+          id="amount"
+          type="number"
+          inputmode="decimal"
+          min="1"
+          step="0.01"
+          placeholder="0.00"
+        >
+      </div>
 
-        <div class="input-group">
-          <label for="amount">Amount</label>
-          <input
-            class="amount-input"
-            type="number"
-            id="amount"
-            min="1"
-            step="0.01"
-            inputmode="decimal"
-            placeholder="0.00"
-          >
-        </div>
+      <button
+        id="continueBtn"
+        type="button"
+        class="primary-btn"
+        disabled
+      >
+        Continue
+      </button>
 
-        <button class="primary-btn" id="continueBtn" type="button">
-          Continue
+    </section>
+
+    <section
+      id="confirmBox"
+      class="card"
+      style="display:none;"
+    >
+
+      <h2>Confirm Transfer</h2>
+
+      <div class="confirm-row">
+        <span>Recipient</span>
+        <strong id="confirmRecipient">—</strong>
+      </div>
+
+      <div class="confirm-row">
+        <span>Amount</span>
+        <strong id="confirmAmount">₱0.00</strong>
+      </div>
+
+      <div class="confirm-row">
+        <span>Available Balance</span>
+        <strong id="confirmBalance">₱0.00</strong>
+      </div>
+
+      <div class="confirm-actions">
+
+        <button
+          id="cancelBtn"
+          type="button"
+          class="secondary-btn"
+        >
+          Cancel
+        </button>
+
+        <button
+          id="confirmBtn"
+          type="button"
+          class="primary-btn"
+        >
+          Confirm Transfer
         </button>
 
       </div>
 
-      <div id="confirmBox" class="confirm-box">
+    </section>
 
-        <h3>Confirm Transfer</h3>
+    <div
+      id="sendMessage"
+      class="auth-message"
+    ></div>
 
-        <div class="confirm-row">
-          <span>Recipient</span>
-          <strong id="confirmRecipient"></strong>
-        </div>
-
-        <div class="confirm-row">
-          <span>Amount</span>
-          <strong id="confirmAmount"></strong>
-        </div>
-
-        <div class="confirm-row">
-          <span>Available Balance</span>
-          <strong id="confirmBalance"></strong>
-        </div>
-
-        <div class="confirm-buttons">
-          <button class="cancel-btn" id="cancelBtn" type="button">
-            Cancel
-          </button>
-
-          <button class="confirm-btn" id="confirmBtn" type="button">
-            Confirm Transfer
-          </button>
-        </div>
-
-      </div>
-
-      <div id="sendMessage" class="auth-message"></div>
-
-    </div>
-
-    <p class="footer-text">Demo only — no real money is sent.</p>
-
-  </div>
+  </main>
 
   <script type="module">
+
     import {
       auth,
       findWalletByPhone,
       getCurrentWallet,
-      createTransferRequest
+      createTransferRequest,
+      formatPeso
     } from "./wallet-firestore.js";
 
     import {
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-    const recipientInput = document.getElementById("recipient");
-    const amountInput = document.getElementById("amount");
+    const recipientInput =
+      document.getElementById("recipient");
 
-    const formSection = document.getElementById("formSection");
-    const confirmBox = document.getElementById("confirmBox");
+    const amountInput =
+      document.getElementById("amount");
 
-    const continueBtn = document.getElementById("continueBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
-    const confirmBtn = document.getElementById("confirmBtn");
+    const formSection =
+      document.getElementById("formSection");
+
+    const confirmBox =
+      document.getElementById("confirmBox");
+
+    const continueBtn =
+      document.getElementById("continueBtn");
+
+    const cancelBtn =
+      document.getElementById("cancelBtn");
+
+    const confirmBtn =
+      document.getElementById("confirmBtn");
 
     const confirmRecipient =
       document.getElementById("confirmRecipient");
@@ -189,12 +172,15 @@
     const message =
       document.getElementById("sendMessage");
 
-    let transferLocked = false;
-    let normalizedRecipient = "";
+    let currentUser = null;
     let recipientWallet = null;
+    let normalizedRecipient = "";
+    let transferLocked = false;
 
     function normalizePhone(phone) {
-      let value = phone.trim().replace(/[^0-9+]/g, "");
+      let value = String(phone || "")
+        .trim()
+        .replace(/[^0-9+]/g, "");
 
       if (value.startsWith("09") && value.length === 11) {
         return "+63" + value.substring(1);
@@ -215,26 +201,37 @@
       return null;
     }
 
-    function formatPeso(amount) {
-      return Number(amount).toLocaleString("en-PH", {
-        style: "currency",
-        currency: "PHP"
-      });
-    }
-
     onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+
       if (!user) {
-        window.location.replace("register.html");
+        window.location.replace("pin-lock.html");
+        return;
       }
+
+      continueBtn.disabled = false;
     });
 
     continueBtn.addEventListener("click", async () => {
-      if (transferLocked) return;
 
-      const recipient = recipientInput.value.trim();
-      const amount = Number(amountInput.value);
+      if (!currentUser) {
+        message.textContent =
+          "Please wait for your account to load.";
+        return;
+      }
 
-      normalizedRecipient = normalizePhone(recipient);
+      if (transferLocked) {
+        return;
+      }
+
+      const recipient =
+        recipientInput.value.trim();
+
+      const amount =
+        Number(amountInput.value);
+
+      normalizedRecipient =
+        normalizePhone(recipient);
 
       if (!normalizedRecipient) {
         message.textContent =
@@ -253,20 +250,29 @@
       message.textContent = "";
 
       try {
-        const wallet = await getCurrentWallet();
 
-        if (!wallet) {
-          throw new Error("Wallet profile not found.");
+        const wallet =
+          await getCurrentWallet();
+
+        const balance =
+          Number(wallet.balance);
+
+        if (!Number.isFinite(balance)) {
+          throw new Error(
+            "Your wallet balance is invalid."
+          );
         }
 
-        const balance = Number(wallet.balance || 0);
-
         if (amount > balance) {
-          throw new Error("Insufficient balance.");
+          throw new Error(
+            `Insufficient balance. Available: ${formatPeso(balance)}`
+          );
         }
 
         recipientWallet =
-          await findWalletByPhone(normalizedRecipient);
+          await findWalletByPhone(
+            normalizedRecipient
+          );
 
         if (!recipientWallet) {
           throw new Error(
@@ -274,7 +280,10 @@
           );
         }
 
-        if (recipientWallet.uid === auth.currentUser.uid) {
+        if (
+          recipientWallet.uid ===
+          currentUser.uid
+        ) {
           throw new Error(
             "You cannot send money to yourself."
           );
@@ -293,29 +302,43 @@
         confirmBox.style.display = "block";
 
       } catch (error) {
-        console.error("Send Money error:", error);
+
+        console.error(
+          "Send Money error:",
+          error
+        );
 
         message.textContent =
-          error.message || "Unable to continue.";
+          error.message ||
+          "Unable to continue.";
 
       } finally {
+
         continueBtn.disabled = false;
         continueBtn.textContent = "Continue";
+
       }
     });
 
     cancelBtn.addEventListener("click", () => {
-      if (transferLocked) return;
+
+      if (transferLocked) {
+        return;
+      }
 
       confirmBox.style.display = "none";
       formSection.style.display = "block";
 
-      message.textContent = "";
       recipientWallet = null;
+      message.textContent = "";
+
     });
 
     confirmBtn.addEventListener("click", async () => {
-      if (transferLocked) return;
+
+      if (transferLocked) {
+        return;
+      }
 
       if (!recipientWallet) {
         message.textContent =
@@ -327,17 +350,23 @@
 
       confirmBtn.disabled = true;
       cancelBtn.disabled = true;
-
       confirmBtn.textContent = "Processing...";
-      confirmBtn.style.opacity = "0.7";
 
-      const amount = Number(amountInput.value);
+      const amount =
+        Number(amountInput.value);
 
       try {
-        await createTransferRequest(
-          recipientWallet.uid,
-          amount,
-          normalizedRecipient
+
+        const requestId =
+          await createTransferRequest(
+            recipientWallet.uid,
+            amount,
+            normalizedRecipient
+          );
+
+        console.log(
+          "Transfer request ID:",
+          requestId
         );
 
         confirmBtn.textContent =
@@ -346,21 +375,19 @@
         confirmBtn.style.background =
           "#16a34a";
 
-        confirmBtn.style.opacity = "1";
-
         message.textContent =
-          "Transfer request created for " +
-          formatPeso(amount) +
-          " to " +
-          normalizedRecipient +
-          ".";
+          "Transfer request created successfully.";
 
         setTimeout(() => {
           window.location.href = "index.html";
-        }, 1800);
+        }, 1500);
 
       } catch (error) {
-        console.error("Transfer request error:", error);
+
+        console.error(
+          "Transfer request error:",
+          error
+        );
 
         transferLocked = false;
 
@@ -370,40 +397,13 @@
         confirmBtn.textContent =
           "Confirm Transfer";
 
-        confirmBtn.style.opacity = "1";
-
         message.textContent =
-          error.message || "Transfer request failed.";
+          error.message ||
+          "Transfer request failed.";
       }
     });
+
   </script>
 
-        confirmBtn.style.opacity = "1";
-
-        message.textContent =
-          "Successfully sent " +
-          formatPeso(amount) +
-          " to " +
-          normalizedRecipient +
-          ".";
-
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 1800);
-
-      } catch (error) {
-        console.error("Transfer error:", error);
-
-        transferLocked = false;
-        confirmBtn.disabled = false;
-        cancelBtn.disabled = false;
-        confirmBtn.textContent = "Confirm Transfer";
-        confirmBtn.style.opacity = "1";
-
-        message.textContent =
-          error.message || "Transfer failed.";
-      }
-    });
-  </script>
 </body>
 </html>

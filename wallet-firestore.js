@@ -11,7 +11,6 @@ import {
   where,
   limit,
   getDocs,
-  runTransaction,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
@@ -26,7 +25,18 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+export function formatPeso(amount) {
+  return Number(amount).toLocaleString("en-PH", {
+    style: "currency",
+    currency: "PHP"
+  });
+}
+
 export async function createWalletProfile(user) {
+  if (!user) {
+    throw new Error("User is not signed in.");
+  }
+
   const userRef = doc(db, "users", user.uid);
   const publicRef = doc(db, "publicProfiles", user.uid);
 
@@ -52,6 +62,10 @@ export async function createWalletProfile(user) {
 }
 
 export async function getWalletProfile(uid) {
+  if (!uid) {
+    throw new Error("User ID is missing.");
+  }
+
   const userRef = doc(db, "users", uid);
   const snapshot = await getDoc(userRef);
 
@@ -59,7 +73,13 @@ export async function getWalletProfile(uid) {
     return null;
   }
 
-  return snapshot.data();
+  const data = snapshot.data();
+  const balance = Number(data.balance);
+
+  return {
+    ...data,
+    balance: Number.isFinite(balance) ? balance : 0
+  };
 }
 
 export async function getCurrentWallet() {
@@ -69,7 +89,13 @@ export async function getCurrentWallet() {
     throw new Error("You are not signed in.");
   }
 
-  return await getWalletProfile(user.uid);
+  const wallet = await getWalletProfile(user.uid);
+
+  if (!wallet) {
+    throw new Error("Wallet profile not found.");
+  }
+
+  return wallet;
 }
 
 export async function findWalletByPhone(phoneNumber) {
@@ -101,100 +127,6 @@ export async function findWalletByPhone(phoneNumber) {
   };
 }
 
-export async function sendDemoMoney(
-  recipientUid,
-  amount,
-  recipientPhone
-) {
-  const sender = auth.currentUser;
-
-  if (!sender) {
-    throw new Error("You are not signed in.");
-  }
-
-  const value = Number(amount);
-
-  if (!Number.isFinite(value) || value <= 0) {
-    throw new Error("Invalid amount.");
-  }
-
-  if (!recipientUid) {
-    throw new Error("Recipient account not found.");
-  }
-
-  if (recipientUid === sender.uid) {
-    throw new Error("You cannot send money to yourself.");
-  }
-
-  const senderRef = doc(db, "users", sender.uid);
-  const recipientRef = doc(db, "users", recipientUid);
-
-  await runTransaction(db, async (transaction) => {
-    const senderSnap = await transaction.get(senderRef);
-    const recipientSnap = await transaction.get(recipientRef);
-
-    if (!senderSnap.exists()) {
-      throw new Error("Sender wallet not found.");
-    }
-
-    if (!recipientSnap.exists()) {
-      throw new Error("Recipient wallet not found.");
-    }
-
-    const senderBalance =
-      Number(senderSnap.data().balance || 0);
-
-    if (value > senderBalance) {
-      throw new Error("Insufficient balance.");
-    }
-
-    const recipientBalance =
-      Number(recipientSnap.data().balance || 0);
-
-    transaction.update(senderRef, {
-      balance: Number((senderBalance - value).toFixed(2))
-    });
-
-    transaction.update(recipientRef, {
-      balance: Number((recipientBalance + value).toFixed(2))
-    });
-  });
-
-  await addDoc(collection(db, "transactions"), {
-    userId: sender.uid,
-    type: "send",
-    direction: "out",
-    amount: value,
-    recipientUid,
-    recipientPhone: recipientPhone || "",
-    createdAt: serverTimestamp()
-  });
-
-  await addDoc(collection(db, "transactions"), {
-    userId: recipientUid,
-    type: "receive",
-    direction: "in",
-    amount: value,
-    senderUid: sender.uid,
-    senderPhone: sender.phoneNumber || "",
-    createdAt: serverTimestamp()
-  });
-
-  return true;
-}
-
-onAuthStateChanged(auth, async (user) => {
-  if (!user) return;
-
-  try {
-    await createWalletProfile(user);
-  } catch (error) {
-    console.error("Wallet profile error:", error);
-  }
-});
-
-export { auth, db };
-
 export async function createTransferRequest(
   recipientUid,
   amount,
@@ -206,12 +138,6 @@ export async function createTransferRequest(
     throw new Error("You are not signed in.");
   }
 
-  const value = Number(amount);
-
-  if (!Number.isFinite(value) || value <= 0) {
-    throw new Error("Invalid amount.");
-  }
-
   if (!recipientUid) {
     throw new Error("Recipient account not found.");
   }
@@ -220,16 +146,23 @@ export async function createTransferRequest(
     throw new Error("You cannot send money to yourself.");
   }
 
-  const wallet = await getCurrentWallet();
+  const value = Number(amount);
 
-  if (!wallet) {
-    throw new Error("Wallet profile not found.");
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new Error("Enter a valid amount.");
   }
 
-  const balance = Number(wallet.balance || 0);
+  const wallet = await getCurrentWallet();
+  const balance = Number(wallet.balance);
+
+  if (!Number.isFinite(balance)) {
+    throw new Error("Wallet balance is invalid.");
+  }
 
   if (value > balance) {
-    throw new Error("Insufficient balance.");
+    throw new Error(
+      `Insufficient balance. Available balance: ${formatPeso(balance)}`
+    );
   }
 
   const requestRef = await addDoc(
@@ -247,3 +180,17 @@ export async function createTransferRequest(
 
   return requestRef.id;
 }
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    return;
+  }
+
+  try {
+    await createWalletProfile(user);
+  } catch (error) {
+    console.error("Wallet profile error:", error);
+  }
+});
+
+export { auth, db };
