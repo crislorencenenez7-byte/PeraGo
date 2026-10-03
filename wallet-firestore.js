@@ -46,12 +46,26 @@ export async function getWalletProfile(uid) {
 }
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) return;
+  console.log("PeraGo Firebase Auth:", user ? user.uid : "NO USER");
+
+  if (!user) {
+    alert("PeraGo: Firebase Auth user not found.");
+    return;
+  }
 
   try {
     await createWalletProfile(user);
+
+    alert("PeraGo: Firestore wallet profile checked successfully.");
   } catch (error) {
-    console.error("Wallet profile error:", error);
+    console.error("Firestore ERROR:", error);
+
+    alert(
+      "PeraGo Firestore ERROR:\n\n" +
+      error.code +
+      "\n\n" +
+      error.message
+    );
   }
 });
 
