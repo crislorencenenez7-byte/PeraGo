@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#1264e8">
-  <title>Enter PIN - PeraGo</title>
-
+  <title>Set New PIN - PeraGo</title>
   <link rel="stylesheet" href="auth.css">
 
   <style>
@@ -20,36 +19,15 @@
       background: #f4f7fb;
     }
 
-    .pin-page {
+    .reset-page {
       min-height: 100dvh;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px 18px;
     }
 
-    .pin-brand {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-
-    .pin-brand .brand-icon {
-      margin: 0 auto 12px;
-    }
-
-    .pin-brand h1 {
-      margin: 0;
-      font-size: 28px;
-    }
-
-    .pin-brand p {
-      margin: 6px 0 0;
-      color: #64748b;
-      font-size: 14px;
-    }
-
-    .pin-card {
+    .reset-card {
       width: 100%;
       max-width: 390px;
       background: #fff;
@@ -59,15 +37,23 @@
       text-align: center;
     }
 
-    .pin-card h2 {
+    .reset-card h2 {
       margin: 0;
       font-size: 22px;
     }
 
-    .pin-card .subtitle {
-      margin: 7px 0 22px;
+    .subtitle {
       color: #64748b;
       font-size: 14px;
+      margin: 8px 0 22px;
+      line-height: 1.5;
+    }
+
+    .step-title {
+      color: #1264e8;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 10px;
     }
 
     .pin-dots {
@@ -90,10 +76,9 @@
       transform: scale(1.05);
     }
 
-    .pin-message {
+    .message {
       min-height: 22px;
       margin-bottom: 14px;
-      color: #dc2626;
       font-size: 13px;
       font-weight: 600;
     }
@@ -123,46 +108,44 @@
       background: #e7eefb;
     }
 
-    .key.zero {
+    .zero {
       grid-column: 2;
     }
 
-    .key.delete {
+    .delete {
       grid-column: 3;
       background: transparent;
       color: #1264e8;
       font-size: 24px;
     }
 
-    .key.delete:active {
+    .delete:active {
       background: #eef5ff;
-    }
-
-    .footer-text {
-      margin-top: 22px;
-      text-align: center;
-      color: #94a3b8;
-      font-size: 12px;
     }
   </style>
 </head>
 
 <body>
 
-  <main class="pin-page">
+  <main class="reset-page">
 
-    <div class="pin-brand">
-      <div class="brand-icon">P</div>
-      <h1>PeraGo</h1>
-      <p>Your digital wallet</p>
-    </div>
+    <section class="reset-card">
 
-    <section class="pin-card">
+      <div class="auth-brand">
+        <div class="brand-icon" style="margin:0 auto 12px;">P</div>
+      </div>
 
-      <h2>Enter your PIN</h2>
-      <p class="subtitle">Enter your 6-digit PIN to continue.</p>
+      <h2 id="title">Create New PIN</h2>
 
-      <div class="pin-dots" id="pinDots">
+      <p class="subtitle" id="subtitle">
+        Choose a new 6-digit PIN for your PeraGo wallet.
+      </p>
+
+      <div class="step-title" id="stepTitle">
+        Enter New PIN
+      </div>
+
+      <div class="pin-dots">
         <span class="pin-dot"></span>
         <span class="pin-dot"></span>
         <span class="pin-dot"></span>
@@ -171,8 +154,7 @@
         <span class="pin-dot"></span>
       </div>
 
-      <div class="pin-message" id="pinMessage"></div>
-      <button id="forgotPinBtn" type="button" onclick="window.location.href='forgot-pin.html'" style="margin:4px 0 18px;border:0;background:transparent;color:#1264e8;font-weight:700;font-size:14px;cursor:pointer;">Forgot PIN?</button>
+      <div class="message" id="message"></div>
 
       <div class="keypad">
 
@@ -198,20 +180,22 @@
 
     </section>
 
-    <p class="footer-text">
-      PeraGo Demo Wallet
-    </p>
-
   </main>
 
   <script type="module">
 
-    import { checkPin } from "./pin.js";
+    import { savePin } from "./pin.js";
 
     let enteredPin = "";
+    let firstPin = "";
+    let confirming = false;
+    let locked = false;
 
     const dots = document.querySelectorAll(".pin-dot");
-    const message = document.getElementById("pinMessage");
+    const message = document.getElementById("message");
+    const title = document.getElementById("title");
+    const subtitle = document.getElementById("subtitle");
+    const stepTitle = document.getElementById("stepTitle");
     const deleteBtn = document.getElementById("deleteBtn");
 
     function updateDots() {
@@ -225,39 +209,75 @@
 
     }
 
-    function clearPin() {
+    function resetInput() {
       enteredPin = "";
       updateDots();
     }
 
-    function unlock() {
+    function processPin() {
 
-      if (enteredPin.length !== 6) {
+      if (enteredPin.length !== 6 || locked) {
         return;
       }
 
-      if (checkPin(enteredPin)) {
+      if (!confirming) {
 
-        message.style.color = "#16a34a";
-        message.textContent = "Unlocked!";
+        firstPin = enteredPin;
 
-        sessionStorage.setItem(
-          "perago_unlocked",
-          "true"
-        );
+        confirming = true;
+        resetInput();
 
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 350);
+        title.textContent = "Confirm New PIN";
 
-      } else {
+        subtitle.textContent =
+          "Enter your new PIN again to confirm.";
+
+        stepTitle.textContent =
+          "Confirm PIN";
+
+        message.textContent = "";
+
+        return;
+      }
+
+      if (enteredPin !== firstPin) {
 
         message.style.color = "#dc2626";
-        message.textContent = "Incorrect PIN.";
+        message.textContent =
+          "PINs do not match. Try again.";
 
-        clearPin();
+        firstPin = "";
+        confirming = false;
 
+        resetInput();
+
+        title.textContent = "Create New PIN";
+
+        subtitle.textContent =
+          "Choose a new 6-digit PIN for your PeraGo wallet.";
+
+        stepTitle.textContent =
+          "Enter New PIN";
+
+        return;
       }
+
+      locked = true;
+
+      savePin(enteredPin);
+
+      sessionStorage.setItem(
+        "perago_unlocked",
+        "true"
+      );
+
+      message.style.color = "#16a34a";
+      message.textContent =
+        "PIN changed successfully!";
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 700);
 
     }
 
@@ -265,7 +285,7 @@
 
       button.addEventListener("click", () => {
 
-        if (enteredPin.length >= 6) {
+        if (enteredPin.length >= 6 || locked) {
           return;
         }
 
@@ -276,7 +296,7 @@
         updateDots();
 
         if (enteredPin.length === 6) {
-          setTimeout(unlock, 120);
+          setTimeout(processPin, 150);
         }
 
       });
@@ -285,10 +305,15 @@
 
     deleteBtn.addEventListener("click", () => {
 
-      if (enteredPin.length > 0) {
-        enteredPin = enteredPin.slice(0, -1);
+      if (enteredPin.length > 0 && !locked) {
+
+        enteredPin =
+          enteredPin.slice(0, -1);
+
         message.textContent = "";
+
         updateDots();
+
       }
 
     });
