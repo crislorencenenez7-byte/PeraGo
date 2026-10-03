@@ -113,15 +113,6 @@
 </div>
 
 
-<script type="module">
-  import { getBalance, formatPeso } from "./wallet.js";
-
-  const balanceElement = document.getElementById("balance");
-
-  if (balanceElement) {
-    balanceElement.textContent = formatPeso(getBalance());
-  }
-</script>
 
 <script>
   let deferredInstallPrompt = null;
@@ -157,6 +148,30 @@
     installButton.style.display = "none";
   }
 </script>
+<script type="module">
+  import { getWalletProfile, auth } from "./wallet-firestore.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+  const balanceElement = document.getElementById("balance");
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user || !balanceElement) return;
+
+    try {
+      const wallet = await getWalletProfile(user.uid);
+
+      if (wallet) {
+        const balance = Number(wallet.balance || 0);
+        balanceElement.textContent = balance.toLocaleString("en-PH", {
+          style: "currency",
+          currency: "PHP"
+        });
+      }
+    } catch (error) {
+      console.error("Failed to load wallet:", error);
+    }
+  });
+</script>
 </body>
 </html>
 
@@ -169,3 +184,4 @@
     });
   }
 </script>
+
