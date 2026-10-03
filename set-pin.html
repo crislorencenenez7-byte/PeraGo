@@ -72,7 +72,7 @@
     const button = document.getElementById("savePinBtn");
     const message = document.getElementById("pinMessage");
 
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
 
       const pinValue = pin.value.trim();
       const confirmValue = confirmPin.value.trim();
@@ -87,9 +87,14 @@
         return;
       }
 
-      savePin(pinValue);
-
-      message.textContent = "PIN created successfully!";
+      try {
+        await savePin(pinValue);
+        message.textContent = "PIN created successfully!";
+      } catch (error) {
+        console.error(error);
+        message.textContent = "Failed to save PIN. Please try again.";
+        return;
+      }
 
       setTimeout(() => {
         window.location.href = "pin-lock.html";

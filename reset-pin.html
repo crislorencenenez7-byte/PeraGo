@@ -214,7 +214,7 @@
       updateDots();
     }
 
-    function processPin() {
+    async function processPin() {
 
       if (enteredPin.length !== 6 || locked) {
         return;
@@ -264,7 +264,14 @@
 
       locked = true;
 
-      savePin(enteredPin);
+      try {
+        await savePin(enteredPin);
+      } catch (error) {
+        console.error(error);
+        message.textContent = "Failed to save PIN. Please try again.";
+        locked = false;
+        return;
+      }
 
       sessionStorage.setItem(
         "perago_unlocked",

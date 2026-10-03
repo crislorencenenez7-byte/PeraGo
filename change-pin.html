@@ -102,7 +102,7 @@
     const button = document.getElementById("changePinBtn");
     const message = document.getElementById("pinMessage");
 
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
 
       const current = currentPin.value.trim();
       const newValue = newPin.value.trim();
@@ -113,7 +113,7 @@
         return;
       }
 
-      if (!checkPin(current)) {
+      if (!(await checkPin(current))) {
         message.textContent = "Current PIN is incorrect.";
         return;
       }
@@ -133,7 +133,13 @@
         return;
       }
 
-      savePin(newValue);
+      try {
+        await savePin(newValue);
+      } catch (error) {
+        console.error(error);
+        message.textContent = "Failed to save PIN. Please try again.";
+        return;
+      }
 
       message.textContent = "PIN changed successfully.";
 

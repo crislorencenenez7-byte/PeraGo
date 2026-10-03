@@ -261,13 +261,13 @@
       updateDots();
     }
 
-    function unlock() {
+    async function unlock() {
 
       if (enteredPin.length !== 6) {
         return;
       }
 
-      if (checkPin(enteredPin)) {
+      if (await checkPin(enteredPin)) {
 
         message.style.color = "#16a34a";
         message.textContent = "Unlocked!";
@@ -278,7 +278,7 @@
         );
 
         setTimeout(() => {
-          window.location.href = "register.html";
+          window.location.href = "index.html";
         }, 350);
 
       } else {
