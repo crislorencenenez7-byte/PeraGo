@@ -1,17 +1,8 @@
-const CACHE_NAME = "perago-v3";
+const CACHE_NAME = "perago-v4";
 
 const APP_FILES = [
   "./",
   "./index.html",
-  "./styles.css",
-  "./script.js",
-  "./auth.css",
-  "./firebase-config.js",
-  "./firebase-auth.js",
-  "./session.js",
-  "./pin.js",
-  "./wallet.js",
-  "./manifest.json",
   "./register.html",
   "./pin-lock.html",
   "./forgot-pin.html",
@@ -22,15 +13,29 @@ const APP_FILES = [
   "./qr.html",
   "./profile.html",
   "./change-pin.html",
+  "./styles.css",
+  "./script.js",
+  "./auth.css",
+  "./firebase-config.js",
+  "./firebase-auth.js",
+  "./session.js",
+  "./pin.js",
+  "./wallet.js",
+  "./manifest.json",
   "./icon-192.png",
-  "./icon-512.png",
+  "./icon-512.png"
 ];
 
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES))
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(APP_FILES))
+      .then(() => self.skipWaiting())
+      .catch(error => {
+        console.error("PeraGo SW install failed:", error);
+        throw error;
+      })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener("activate", event => {
@@ -41,9 +46,8 @@ self.addEventListener("activate", event => {
           .filter(key => key !== CACHE_NAME)
           .map(key => caches.delete(key))
       )
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", event => {
