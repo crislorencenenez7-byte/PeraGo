@@ -30,8 +30,8 @@ export async function hasPin() {
 }
 
 export async function savePin(pin) {
-  if (!/^\d{6}$/.test(pin)) {
-    throw new Error("PIN must be exactly 6 digits.");
+  if (!/^\d{4}$/.test(pin)) {
+    throw new Error("PIN must be exactly 4 digits.");
   }
 
   const user = auth.currentUser;
@@ -49,7 +49,7 @@ export async function savePin(pin) {
 }
 
 export async function checkPin(pin) {
-  if (!/^\d{6}$/.test(pin)) return false;
+  if (!/^\d{4}$/.test(pin)) return false;
 
   const user = auth.currentUser;
   if (!user) return false;

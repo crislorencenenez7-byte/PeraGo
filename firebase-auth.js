@@ -1,8 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import {
   getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
   signOut
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
@@ -11,17 +12,24 @@ import { firebaseConfig } from "./firebase-config.js";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-window.registerWithEmail = async function (email, password) {
+const actionCodeSettings = {
+  url: window.location.origin + "/register.html",
+  handleCodeInApp: true
+};
+
+window.sendEmailVerificationLink = async function (email) {
   try {
-    const result = await createUserWithEmailAndPassword(
+    await sendSignInLinkToEmail(
       auth,
       email.trim(),
-      password
+      actionCodeSettings
     );
+
+    localStorage.setItem("perago_email_for_signin", email.trim());
 
     return {
       success: true,
-      user: result.user
+      message: "Verification link sent to your email."
     };
   } catch (error) {
     console.error(error);
@@ -33,13 +41,31 @@ window.registerWithEmail = async function (email, password) {
   }
 };
 
-window.loginWithEmail = async function (email, password) {
+window.completeEmailVerification = async function () {
   try {
-    const result = await signInWithEmailAndPassword(
+    if (!isSignInWithEmailLink(auth, window.location.href)) {
+      return {
+        success: false,
+        message: "This is not a valid PeraGo verification link."
+      };
+    }
+
+    const email = localStorage.getItem("perago_email_for_signin");
+
+    if (!email) {
+      return {
+        success: false,
+        message: "Please enter your email again."
+      };
+    }
+
+    const result = await signInWithEmailLink(
       auth,
-      email.trim(),
-      password
+      email,
+      window.location.href
     );
+
+    localStorage.removeItem("perago_email_for_signin");
 
     return {
       success: true,

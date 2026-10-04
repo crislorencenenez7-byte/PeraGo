@@ -160,11 +160,9 @@
     <section class="pin-card">
 
       <h2>Enter your PIN</h2>
-      <p class="subtitle">Enter your 6-digit PIN to continue.</p>
+      <p class="subtitle">Enter your 4-digit PIN to continue.</p>
 
       <div class="pin-dots" id="pinDots">
-        <span class="pin-dot"></span>
-        <span class="pin-dot"></span>
         <span class="pin-dot"></span>
         <span class="pin-dot"></span>
         <span class="pin-dot"></span>
@@ -263,7 +261,7 @@
 
     async function unlock() {
 
-      if (enteredPin.length !== 6) {
+      if (enteredPin.length !== 4) {
         return;
       }
 
@@ -296,7 +294,7 @@
 
       button.addEventListener("click", () => {
 
-        if (enteredPin.length >= 6) {
+        if (enteredPin.length >= 4) {
           return;
         }
 
@@ -306,7 +304,7 @@
 
         updateDots();
 
-        if (enteredPin.length === 6) {
+        if (enteredPin.length === 4) {
           setTimeout(unlock, 120);
         }
 
