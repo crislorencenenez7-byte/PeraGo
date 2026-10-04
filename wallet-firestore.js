@@ -39,27 +39,28 @@ export async function createWalletProfile(user) {
   }
 
   const userRef = doc(db, "users", user.uid);
-  const publicRef = doc(db, "publicProfiles", user.uid);
-
   const snapshot = await getDoc(userRef);
 
   if (!snapshot.exists()) {
     await setDoc(userRef, {
       uid: user.uid,
-      phoneNumber: user.phoneNumber || "",
+      name: "",
+      phone: "",
+      email: user.email || "",
       balance: 1000,
       createdAt: serverTimestamp()
     });
-  }
+  } else {
+    const data = snapshot.data();
 
-  await setDoc(
-    publicRef,
-    {
-      uid: user.uid,
-      phoneNumber: user.phoneNumber || ""
-    },
-    { merge: true }
-  );
+    if (!Number.isFinite(Number(data.balance))) {
+      await setDoc(
+        userRef,
+        { balance: 1000 },
+        { merge: true }
+      );
+    }
+  }
 }
 
 export async function getWalletProfile(uid) {
@@ -106,11 +107,11 @@ export async function findWalletByPhone(phoneNumber) {
     return null;
   }
 
-  const profilesRef = collection(db, "publicProfiles");
+  const usersRef = collection(db, "users");
 
   const q = query(
-    profilesRef,
-    where("phoneNumber", "==", normalizedPhone),
+    usersRef,
+    where("phone", "==", normalizedPhone),
     limit(1)
   );
 
@@ -197,7 +198,7 @@ export async function createTransferRequest(
 
     transaction.set(requestRef, {
       senderUid: sender.uid,
-      senderPhone: sender.phoneNumber || "",
+      senderPhone: senderSnap.data().phone || "",
       recipientUid,
       recipientPhone: recipientPhone || "",
       amount: value,

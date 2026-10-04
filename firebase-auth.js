@@ -8,9 +8,15 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 import { firebaseConfig } from "./firebase-config.js";
+import {
+  getFirestore,
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 const actionCodeSettings = {
   url: window.location.origin + "/register.html",
@@ -65,7 +71,23 @@ window.completeEmailVerification = async function () {
       window.location.href
     );
 
+    const name = localStorage.getItem("perago_pending_name") || "";
+    const phone = localStorage.getItem("perago_pending_phone") || "";
+
+    await setDoc(
+      doc(db, "users", result.user.uid),
+      {
+        uid: result.user.uid,
+        name: name,
+        phone: phone,
+        email: result.user.email || email
+      },
+      { merge: true }
+    );
+
     localStorage.removeItem("perago_email_for_signin");
+    localStorage.removeItem("perago_pending_name");
+    localStorage.removeItem("perago_pending_phone");
 
     return {
       success: true,

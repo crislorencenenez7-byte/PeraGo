@@ -289,8 +289,9 @@
           );
         }
 
-        confirmRecipient.textContent =
-          normalizedRecipient;
+        confirmRecipient.innerHTML =
+          `<span style="display:block;">${recipientWallet.name || "Unknown User"}</span>` +
+          `<small style="display:block;margin-top:4px;color:#64748b;">${recipientWallet.phone || normalizedRecipient}</small>`;
 
         confirmAmount.textContent =
           formatPeso(amount);
