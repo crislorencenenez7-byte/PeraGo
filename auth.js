@@ -1,27 +1,10 @@
 import "./firebase-auth.js";
 
-const phoneInput =
-  document.querySelector("#phone") ||
-  document.querySelector("#phoneNumber") ||
-  document.querySelector("#mobile");
-
-const otpInput =
-  document.querySelector("#otp") ||
-  document.querySelector("#otpCode");
-
-const sendOtpButton =
-  document.querySelector("#sendOtpBtn") ||
-  document.querySelector("#sendOTP") ||
-  document.querySelector("#send-otp");
-
-const verifyOtpButton =
-  document.querySelector("#verifyOtpBtn") ||
-  document.querySelector("#verifyOTP") ||
-  document.querySelector("#verify-otp");
-
-const message =
-  document.querySelector("#authMessage") ||
-  document.querySelector("#message");
+const emailInput = document.querySelector("#email");
+const passwordInput = document.querySelector("#password");
+const confirmPasswordInput = document.querySelector("#confirmPassword");
+const registerButton = document.querySelector("#registerBtn");
+const message = document.querySelector("#authMessage");
 
 function showMessage(text) {
   if (message) {
@@ -31,71 +14,41 @@ function showMessage(text) {
   }
 }
 
-if (sendOtpButton) {
-  sendOtpButton.addEventListener("click", async () => {
-    if (!phoneInput) {
-      showMessage("Phone number field not found.");
+if (registerButton) {
+  registerButton.addEventListener("click", async () => {
+    const email = emailInput?.value.trim() || "";
+    const password = passwordInput?.value || "";
+    const confirmPassword = confirmPasswordInput?.value || "";
+
+    if (!email) {
+      showMessage("Enter your email address.");
       return;
     }
 
-    const phone = phoneInput.value.trim();
-
-    if (!phone) {
-      showMessage("Enter your mobile number first.");
+    if (password.length < 6) {
+      showMessage("Password must be at least 6 characters.");
       return;
     }
 
-    sendOtpButton.disabled = true;
-    showMessage("Sending OTP...");
+    if (password !== confirmPassword) {
+      showMessage("Passwords do not match.");
+      return;
+    }
 
-    const result = await window.sendOTP(phone);
+    registerButton.disabled = true;
+    showMessage("Creating account...");
+
+    const result = await window.registerWithEmail(email, password);
 
     if (result.success) {
-      showMessage("OTP sent. Check your SMS.");
-
-      if (otpInput) {
-        otpInput.style.display = "block";
-        otpInput.focus();
-      }
-
-      if (verifyOtpButton) {
-        verifyOtpButton.style.display = "block";
-      }
-    } else {
-      showMessage("OTP failed: " + result.message);
-      sendOtpButton.disabled = false;
-    }
-  });
-}
-
-if (verifyOtpButton) {
-  verifyOtpButton.addEventListener("click", async () => {
-    if (!otpInput) {
-      showMessage("OTP field not found.");
-      return;
-    }
-
-    const otp = otpInput.value.trim();
-
-    if (!/^\d{6}$/.test(otp)) {
-      showMessage("Enter the 6-digit OTP.");
-      return;
-    }
-
-    verifyOtpButton.disabled = true;
-    showMessage("Verifying OTP...");
-
-    const result = await window.verifyOTP(otp);
-
-    if (result.success) {
-      showMessage("Verified successfully!");
+      showMessage("Account created successfully!");
 
       setTimeout(() => {
         window.location.href = "set-pin.html";
       }, 500);
     } else {
-      showMessage("Verification failed: " + result.message);
-      verifyOtpButton.disabled = false;
+      showMessage("Registration failed: " + result.message);
+      registerButton.disabled = false;
     }
   });
 }

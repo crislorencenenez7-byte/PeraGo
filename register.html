@@ -8,7 +8,6 @@
 </head>
 
 <body>
-
   <div class="auth-page">
 
     <div class="auth-brand">
@@ -21,69 +20,54 @@
 
       <div class="auth-heading">
         <h2>Create Account</h2>
-        <p>Register your mobile number to get started.</p>
+        <p>Register your email to get started.</p>
       </div>
 
       <div class="input-group">
-        <label for="phone">Mobile Number</label>
-
-        <div class="input-box">
-          <span class="country-code">🇵🇭 +63</span>
-          <input
-            type="tel"
-            id="phone"
-            placeholder="9XXXXXXXXX"
-            inputmode="numeric"
-            autocomplete="tel"
-          >
-        </div>
-
-        <small>Example: 9171234567</small>
-      </div>
-
-      <div id="recaptcha-container"></div>
-
-      <button class="primary-btn" id="sendOtpBtn" type="button">
-        Send OTP
-      </button>
-
-      <div id="otpSection" class="otp-section">
-
-        <div class="input-group">
-          <label for="otp">Verification Code</label>
-
-          <input
-            class="otp-input"
-            type="text"
-            id="otp"
-            placeholder="000000"
-            maxlength="6"
-            inputmode="numeric"
-            autocomplete="one-time-code"
-          >
-
-          <small>Enter the 6-digit code sent to your phone.</small>
-        </div>
-
-        <button
-          class="primary-btn"
-          id="verifyOtpBtn"
-          type="button"
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          placeholder="you@example.com"
+          autocomplete="email"
         >
-          Verify & Continue
-        </button>
-
       </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter your password"
+          autocomplete="new-password"
+        >
+        <small>Password must be at least 6 characters.</small>
+      </div>
+
+      <div class="input-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          placeholder="Re-enter your password"
+          autocomplete="new-password"
+        >
+      </div>
+
+      <button class="primary-btn" id="registerBtn" type="button">
+        Create Account
+      </button>
 
       <div id="authMessage" class="auth-message"></div>
 
-      <div class="divider">
-        
-      </div>
-
+      <div class="divider"></div>
 
       <div style="text-align:center;margin-top:18px;">
-        <button type="button" onclick="window.location.href='pin-lock.html'" style="border:0;background:transparent;color:#1264e8;font-weight:700;font-size:14px;cursor:pointer;">
+        <button
+          type="button"
+          onclick="window.location.href='pin-lock.html'"
+          style="border:0;background:transparent;color:#1264e8;font-weight:700;font-size:14px;cursor:pointer;"
+        >
           Already have an account? Login
         </button>
       </div>
@@ -96,37 +80,61 @@
 
   </div>
 
-  <script type="module" src="auth.js"></script>
+  <script type="module">
+    import { auth } from "./firebase-auth.js";
 
-  <script>
-    const otpSection = document.getElementById("otpSection");
-    const otpInput = document.getElementById("otp");
+    const registerBtn = document.getElementById("registerBtn");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+    const authMessage = document.getElementById("authMessage");
 
-    otpSection.style.display = "none";
+    registerBtn.addEventListener("click", async () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
 
-    const observer = new MutationObserver(() => {
-      if (otpInput.style.display !== "none") {
-        otpSection.style.display = "block";
+      authMessage.textContent = "";
+
+      if (!email) {
+        authMessage.textContent = "Please enter your email address.";
+        return;
       }
-    });
 
-    observer.observe(otpInput, {
-      attributes: true,
-      attributeFilter: ["style"]
+      if (!password) {
+        authMessage.textContent = "Please enter a password.";
+        return;
+      }
+
+      if (password.length < 6) {
+        authMessage.textContent = "Password must be at least 6 characters.";
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        authMessage.textContent = "Passwords do not match.";
+        return;
+      }
+
+      registerBtn.disabled = true;
+      registerBtn.textContent = "Creating Account...";
+
+      const result = await window.registerWithEmail(email, password);
+
+      if (!result.success) {
+        authMessage.textContent = result.message;
+        registerBtn.disabled = false;
+        registerBtn.textContent = "Create Account";
+        return;
+      }
+
+      authMessage.textContent = "Account created successfully.";
+
+      setTimeout(() => {
+        window.location.href = "set-pin.html";
+      }, 700);
     });
   </script>
-
-
-<div style="text-align:center;margin-top:18px;">
-  <button
-    type="button"
-    onclick="window.location.href='pin-lock.html'"
-    style="border:0;background:transparent;color:#1264e8;font-weight:700;font-size:14px;cursor:pointer;"
-  >
-    Already have an account? Login
-  </button>
-</div>
-
 
 </body>
 </html>
