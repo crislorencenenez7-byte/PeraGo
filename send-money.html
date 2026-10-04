@@ -303,7 +303,7 @@
 
       } catch (error) {
 
-        console.error(
+        console.error("FULL TRANSFER ERROR:", error.code, error.message, error); console.error(
           "Send Money error:",
           error
         );
@@ -384,7 +384,7 @@
 
       } catch (error) {
 
-        console.error(
+        console.error("FULL TRANSFER ERROR:", error.code, error.message, error); console.error(
           "Transfer request error:",
           error
         );
