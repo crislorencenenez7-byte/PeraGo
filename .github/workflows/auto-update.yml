@@ -1,6 +1,8 @@
 name: PeraGo Auto Update
 
 on:
+permissions:
+  contents: write
   schedule:
     - cron: "0 * * * *"
   workflow_dispatch:
