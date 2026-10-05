@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  update:
+  promote:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,15 +17,48 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: staging
+          fetch-depth: 0
 
-      - name: Update service worker version
+      - name: Check update schedule
+        id: schedule
         run: |
-          sed -i -E 's/perago-v[0-9]+/perago-v'$(date +%s)'/' sw.js
+          python - <<'PY'
+          import json
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
 
-      - name: Commit and push
+          with open("update-schedule.json", "r") as f:
+              config = json.load(f)["update"]
+
+          scheduled = datetime.fromisoformat(
+              f"{config['date']}T{config['time']}:00"
+          ).replace(tzinfo=ZoneInfo(config["timezone"]))
+
+          now = datetime.now(ZoneInfo(config["timezone"]))
+
+          print("Scheduled:", scheduled)
+          print("Current:", now)
+
+          if now >= scheduled:
+              result = "true"
+              print("Update time reached.")
+          else:
+              result = "false"
+              print("Not yet time.")
+
+          with open("/tmp/should_update", "w") as f:
+              f.write(result)
+          PY
+
+          echo "should_update=$(cat /tmp/should_update)" >> "$GITHUB_OUTPUT"
+
+      - name: Promote staging to main
+        if: steps.schedule.outputs.should_update == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add sw.js
-          git diff --cached --quiet || git commit -m "Auto update PeraGo"
-          git push origin staging
+
+          git fetch origin main staging
+          git checkout -B main origin/main
+          git merge --ff-only origin/staging
+          git push origin main
