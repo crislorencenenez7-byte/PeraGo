@@ -60,5 +60,5 @@ jobs:
 
           git fetch origin main staging
           git checkout -B main origin/main
-          git merge --ff-only origin/staging
+          git merge --no-edit origin/staging
           git push origin main
