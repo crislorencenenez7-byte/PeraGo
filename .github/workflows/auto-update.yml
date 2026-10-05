@@ -60,5 +60,7 @@ jobs:
 
           git fetch origin main staging
           git checkout -B main origin/main
-          git merge --no-edit origin/staging
+          git restore --source=origin/staging -- . ':!.github/workflows/auto-update.yml'
+          git add .
+          git commit -m "Promote scheduled staging update" || true
           git push origin main
