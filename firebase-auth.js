@@ -85,6 +85,16 @@ window.completeEmailVerification = async function () {
       { merge: true }
     );
 
+    await setDoc(
+      doc(db, "publicProfiles", result.user.uid),
+      {
+        uid: result.user.uid,
+        name: name,
+        phone: phone
+      },
+      { merge: true }
+    );
+
     localStorage.removeItem("perago_email_for_signin");
     localStorage.removeItem("perago_pending_name");
     localStorage.removeItem("perago_pending_phone");

@@ -107,10 +107,10 @@ export async function findWalletByPhone(phoneNumber) {
     return null;
   }
 
-  const usersRef = collection(db, "users");
+  const profilesRef = collection(db, "publicProfiles");
 
   const q = query(
-    usersRef,
+    profilesRef,
     where("phone", "==", normalizedPhone),
     limit(1)
   );
