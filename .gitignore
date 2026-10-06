@@ -1,6 +1,0 @@
-service-account.json
-node_modules/
-.env
-backup-before-auth-fix/
-.vercel
-.env*
