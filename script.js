@@ -100,14 +100,16 @@ document.getElementById("learnMore")?.addEventListener("click", () => {
   toast("QR payments — coming next");
 });
 
-let hidden = false;
+document.getElementById("historyAction")?.addEventListener("click", () => {
+  document.getElementById("transactions")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+});
 
-document.getElementById("toggleBalance")?.addEventListener("click", (e) => {
-  hidden = !hidden;
-
-  document.getElementById("balance").textContent =
-    hidden ? "₱ ••••" : "₱0.00";
-
-  e.currentTarget.textContent =
-    hidden ? "◉ Show Balance" : "◉ View Balance";
+document.querySelector('.nav-item[data-page="Transactions"]')?.addEventListener("click", () => {
+  document.getElementById("transactions")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 });

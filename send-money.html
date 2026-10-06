@@ -135,6 +135,8 @@
       formatPeso
     } from "./wallet-firestore.js";
 
+    import { addTransaction } from "./wallet.js";
+
     import {
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
@@ -369,6 +371,14 @@
           "Transfer request ID:",
           requestId
         );
+
+        addTransaction({
+          direction: "out",
+          type: "send",
+          title: "Sent Money",
+          recipient: recipientWallet.name || recipientWallet.phone || normalizedRecipient,
+          amount
+        });
 
         confirmBtn.textContent =
           "✓ Request Sent";
