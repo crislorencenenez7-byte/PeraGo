@@ -13,21 +13,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout staging
+      - name: Checkout main
         uses: actions/checkout@v4
         with:
-          ref: staging
+          ref: main
           fetch-depth: 0
+
+      - name: Fetch staging
+        run: git fetch origin staging
 
       - name: Check update schedule
         id: schedule
+        shell: bash
         run: |
+          git show origin/staging:update-schedule.json > /tmp/update-schedule.json
+
           python - <<'PY'
           import json
           from datetime import datetime
           from zoneinfo import ZoneInfo
 
-          with open("update-schedule.json", "r") as f:
+          with open("/tmp/update-schedule.json", "r", encoding="utf-8") as f:
               config = json.load(f)["update"]
 
           scheduled = datetime.fromisoformat(
@@ -39,14 +45,12 @@ jobs:
           print("Scheduled:", scheduled)
           print("Current:", now)
 
-          if now >= scheduled:
-              with open("/tmp/should_update", "w") as f:
-                  f.write("true")
-              print("Update time reached.")
-          else:
-              with open("/tmp/should_update", "w") as f:
-                  f.write("false")
-              print("Not yet time.")
+          result = "true" if now >= scheduled else "false"
+
+          with open("/tmp/should_update", "w") as f:
+              f.write(result)
+
+          print("Should update:", result)
           PY
 
           echo "should_update=$(cat /tmp/should_update)" >> "$GITHUB_OUTPUT"
@@ -57,9 +61,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git fetch origin main staging
-          git checkout -B main origin/main
-          git restore --source=origin/staging -- . ':!.github/workflows/auto-update.yml'
+          git restore --source=origin/staging -- \
+            . \
+            ':!.github/workflows/auto-update.yml'
+
           git add .
-          git commit -m "Promote scheduled staging update" || true
+
+          git commit -m "Promote scheduled staging update" || echo "No changes to commit."
+
           git push origin main
