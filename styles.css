@@ -649,3 +649,336 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== PeraGo Premium UI — 9:30 PM Update ===== */
+
+:root {
+  --blue: #1769ff;
+  --blue-2: #4b8dff;
+  --text: #10213f;
+  --muted: #71809a;
+  --bg: #f5f8ff;
+  --card: rgba(255,255,255,.94);
+  --green: #12b76a;
+  --red: #ef476f;
+  --shadow: 0 14px 40px rgba(25, 67, 130, .09);
+}
+
+body {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(75,141,255,.13), transparent 30%),
+    linear-gradient(180deg, #f7faff 0%, #f1f5fc 100%);
+  color: var(--text);
+}
+
+.app-shell {
+  background: transparent;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 24px 18px 34px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(255,255,255,.25), transparent 25%),
+    linear-gradient(145deg, #0b4dcc 0%, #1769ff 55%, #438cff 100%);
+  border-radius: 0 0 34px 34px;
+  box-shadow: 0 18px 45px rgba(23,105,255,.22);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  right: -90px;
+  bottom: -100px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.08);
+}
+
+.topbar {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 24px;
+}
+
+.brand {
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 50px;
+  height: 50px;
+  border-radius: 17px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+}
+
+.brand-name {
+  font-size: 30px;
+  letter-spacing: -1px;
+}
+
+.tagline {
+  font-size: 11px;
+  letter-spacing: .2px;
+}
+
+.icon-btn,
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 15px;
+  backdrop-filter: blur(12px);
+}
+
+.icon-btn {
+  background: rgba(255,255,255,.16);
+}
+
+.avatar {
+  background: rgba(255,255,255,.92);
+}
+
+.balance-card {
+  position: relative;
+  z-index: 2;
+  min-height: 205px;
+  padding: 26px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.07)),
+    rgba(7,71,184,.38);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.2),
+    0 20px 42px rgba(0,37,120,.24);
+  backdrop-filter: blur(16px);
+}
+
+.balance-label {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: .3px;
+  opacity: .82;
+  text-transform: uppercase;
+}
+
+.balance-card h1 {
+  font-size: clamp(38px, 11vw, 52px);
+  letter-spacing: -2.5px;
+  line-height: 1;
+  margin: 10px 0 16px;
+}
+
+.balance-toggle {
+  font-size: 13px;
+  font-weight: 650;
+  opacity: .86;
+}
+
+.wallet-icon {
+  width: 88px;
+  height: 88px;
+  border-radius: 27px;
+  background: rgba(255,255,255,.13);
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16);
+}
+
+main {
+  padding: 20px 16px 110px;
+}
+
+.quick-actions {
+  margin-top: -2px;
+  position: relative;
+  z-index: 3;
+  padding: 17px 8px;
+  border: 1px solid rgba(255,255,255,.8);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+}
+
+.action {
+  transition: transform .18s ease;
+}
+
+.action:active {
+  transform: scale(.94);
+}
+
+.action-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.75);
+}
+
+.card {
+  border: 1px solid rgba(224,232,245,.8);
+  box-shadow: var(--shadow);
+  border-radius: 24px;
+}
+
+.section-heading h2 {
+  font-size: 19px;
+  letter-spacing: -.3px;
+}
+
+.section-heading button {
+  font-size: 13px;
+}
+
+.transaction {
+  padding: 16px 0;
+}
+
+.tx-icon {
+  width: 46px;
+  height: 46px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.025);
+}
+
+.tx-title {
+  font-size: 14px;
+}
+
+.qr-banner {
+  border-radius: 24px;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255,255,255,.2), transparent 35%),
+    linear-gradient(110deg, #0d58d9, #287df5);
+  box-shadow: 0 15px 35px rgba(23,105,255,.18);
+}
+
+.qr-symbol {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 17px;
+  background: rgba(255,255,255,.14);
+  font-size: 30px;
+}
+
+.qr-banner button {
+  border-radius: 15px;
+  padding: 10px 13px;
+  box-shadow: 0 6px 15px rgba(0,0,0,.08);
+}
+
+.bottom-nav {
+  height: 76px;
+  background: rgba(255,255,255,.88);
+  border-top: 1px solid rgba(218,226,239,.8);
+  box-shadow: 0 -10px 30px rgba(28,55,95,.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.nav-item {
+  color: #8794a9;
+  transition: transform .18s ease, color .18s ease;
+}
+
+.nav-item:active {
+  transform: scale(.9);
+}
+
+.nav-item.active {
+  color: var(--blue);
+}
+
+.nav-item span {
+  font-size: 23px;
+}
+
+.nav-item small {
+  font-size: 10px;
+  letter-spacing: .15px;
+}
+
+.qr-main span {
+  width: 54px;
+  height: 54px;
+  background: linear-gradient(145deg, #1769ff, #4b8dff);
+  box-shadow: 0 10px 24px rgba(23,105,255,.34);
+  border: 4px solid #f5f8ff;
+}
+
+.toast {
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(10,25,55,.2);
+  backdrop-filter: blur(12px);
+}
+
+#installAppBtn {
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #1769ff, #438cff) !important;
+  box-shadow: 0 10px 24px rgba(23,105,255,.2) !important;
+}
+
+@media (max-width: 380px) {
+  .balance-card {
+    padding: 22px;
+  }
+
+  .balance-card h1 {
+    font-size: 36px;
+  }
+
+  .wallet-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 34px;
+  }
+
+  .action-icon {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .balance-card {
+    animation: peragoCardIn .55s ease both;
+  }
+
+  .quick-actions,
+  .transactions-card,
+  .qr-banner {
+    animation: peragoFadeUp .5s ease both;
+  }
+
+  .transactions-card {
+    animation-delay: .06s;
+  }
+
+  .qr-banner {
+    animation-delay: .12s;
+  }
+}
+
+@keyframes peragoCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes peragoFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
