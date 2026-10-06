@@ -1,4 +1,4 @@
-const CACHE_NAME = "perago-v202610060920";
+const CACHE_NAME = "perago-v202610061620";
 
 const APP_FILES = [
   "./",
@@ -21,6 +21,7 @@ const APP_FILES = [
   "./pin.js",
   "./wallet.js",
   "./wallet-firestore.js",
+  "./update-timer.js",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png"
