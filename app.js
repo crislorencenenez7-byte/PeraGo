@@ -9,7 +9,7 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&
 const toast=m=>{const x=document.querySelector("#toast");x.textContent=m;x.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>x.classList.remove("show"),2200)};
 const validPhone=p=>/^09\d{9}$/.test(p);
 const validPin=p=>/^\d{4}$/.test(p);
-const makeOtp=()=>String(Math.floor(100000+Math.random()*900000));
+const makeOtp=()=>String(Math.floor(Math.random()*1000000)).padStart(6,"0");
 
 async function findUser(phone){
  const q=query(collection(db,"users"),where("phone","==",phone),limit(1));
@@ -42,65 +42,155 @@ function loginStep(){
 
 function registerPhoneStep(){
  const box=document.querySelector("#authbox");
+
  box.innerHTML=`<div class="steps"><i class="step on"></i><i class="step"></i><i class="step"></i></div>
- <div class="card"><h2>Create account</h2><p class="muted">Start with your mobile number.</p>
- <div class="field"><label>MOBILE NUMBER</label><input id="regPhone" inputmode="numeric" maxlength="11" placeholder="09XXXXXXXXX"></div>
+ <div class="card"><h2>Create account</h2>
+ <p class="muted">Enter your mobile number to begin.</p>
+
+ <div class="field"><label>MOBILE NUMBER</label>
+ <input id="regPhone" inputmode="numeric" maxlength="11" placeholder="09XXXXXXXXX">
+ </div>
+
  <button class="primary" id="otpBtn">Generate OTP</button>
- <button class="ghost" id="back" style="margin-top:10px">Back to login</button></div>`;
+
+ <div id="registrationFields"></div>
+
+ <button class="ghost" id="back" style="margin-top:10px">Back to login</button>
+ </div>`;
+
  document.querySelector("#otpBtn").onclick=async()=>{
   const phone=document.querySelector("#regPhone").value.trim();
-  if(!validPhone(phone))return toast("Enter a valid 11-digit PH number.");
-  if(await findUser(phone))return toast("Number is already registered.");
-  const otp=makeOtp();sessionStorage.setItem("perago_demo_otp",otp);sessionStorage.setItem("perago_reg_phone",phone);
-  otpStep(phone,otp);
+
+  if(!validPhone(phone))
+   return toast("Enter a valid 11-digit PH number.");
+
+  if(await findUser(phone))
+   return toast("Number is already registered.");
+
+  const otp=makeOtp();
+
+  sessionStorage.setItem("perago_demo_otp",otp);
+  sessionStorage.setItem("perago_reg_phone",phone);
+
+  document.querySelector("#otpBtn").style.display="none";
+  document.querySelector("#regPhone").readOnly=true;
+
+  document.querySelector("#registrationFields").innerHTML=`
+   <div class="otp-box">
+    <div>DEMO OTP — prototype only</div>
+    <div class="otp-value">${otp}</div>
+   </div>
+
+   <div class="field">
+    <label>OTP</label>
+    <input id="otp" inputmode="numeric" maxlength="6" placeholder="6-digit OTP">
+   </div>
+
+   <button class="primary" id="verifyOtp">Verify OTP</button>
+   <div id="detailsFields"></div>
+  `;
+
+  document.querySelector("#verifyOtp").onclick=()=>{
+   const entered=document.querySelector("#otp").value.trim();
+
+   if(entered!==otp)
+    return toast("Incorrect OTP.");
+
+   document.querySelector("#verifyOtp").style.display="none";
+   document.querySelector("#otp").readOnly=true;
+
+   document.querySelector("#detailsFields").innerHTML=`
+    <div class="otp-box">
+     <div>Mobile number verified</div>
+     <div class="otp-value">Verified</div>
+    </div>
+
+    <div class="field">
+     <label>NAME</label>
+     <input id="name" placeholder="Your name">
+    </div>
+
+    <div class="field">
+     <label>NUMBER</label>
+     <input value="${phone}" readonly>
+    </div>
+
+    <div class="field">
+     <label>EMAIL</label>
+     <input id="email" type="email" placeholder="you@example.com">
+    </div>
+
+    <div class="field">
+     <label>BIRTHDAY</label>
+     <input id="birthday" type="date">
+    </div>
+
+    <div class="field">
+     <label>FILIPINO</label>
+     <select id="filipino">
+      <option value="">Select</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+     </select>
+    </div>
+
+    <div class="field">
+     <label>4-DIGIT PIN</label>
+     <input id="pin1" inputmode="numeric" maxlength="4" type="password" placeholder="••••">
+    </div>
+
+    <div class="field">
+     <label>CONFIRM PIN</label>
+     <input id="pin2" inputmode="numeric" maxlength="4" type="password" placeholder="••••">
+    </div>
+
+    <button class="primary" id="finish">Create Account</button>
+   `;
+
+   document.querySelector("#finish").onclick=async()=>{
+    const name=document.querySelector("#name").value.trim();
+    const email=document.querySelector("#email").value.trim();
+    const birthday=document.querySelector("#birthday").value;
+    const filipino=document.querySelector("#filipino").value;
+    const pin1=document.querySelector("#pin1").value;
+    const pin2=document.querySelector("#pin2").value;
+
+    if(name.length<2)return toast("Enter your name.");
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast("Enter a valid email.");
+    if(!birthday)return toast("Enter your birthday.");
+    if(!filipino)return toast("Select Yes or No for Filipino.");
+    if(!validPin(pin1))return toast("PIN must be exactly 4 digits.");
+    if(pin1!==pin2)return toast("PINs do not match.");
+
+    try{
+     const u=await ensureSessionUser();
+
+     await setDoc(doc(db,"users",u.uid),{
+      uid:u.uid,
+      name,
+      phone,
+      email,
+      birthday,
+      filipino,
+      verified:false,
+      balance:1000,
+      pin:pin1,
+      createdAt:serverTimestamp()
+     });
+
+     sessionStorage.clear();
+     sessionStorage.setItem("perago_logged","1");
+
+     toast("Registration complete.");
+     dashboard(u);
+    }catch(e){
+     toast(e.message);
+    }
+   };
+  };
  };
+
  document.querySelector("#back").onclick=()=>authScreen("login");
-}
-
-function otpStep(phone,otp){
- const box=document.querySelector("#authbox");
- box.innerHTML=`<div class="steps"><i class="step on"></i><i class="step on"></i><i class="step"></i></div>
- <div class="card"><h2>Verify number</h2><p class="muted">Enter the OTP shown below.</p>
- <div class="field"><label>OTP</label><input id="otp" inputmode="numeric" maxlength="6" placeholder="6-digit OTP"></div>
- <div class="otp-box">DEMO OTP — for this prototype only<div class="otp-value">${otp}</div></div>
- <button class="primary" id="verify">Verify OTP</button></div>`;
- document.querySelector("#verify").onclick=()=>{
-  if(document.querySelector("#otp").value.trim()!==otp)return toast("Incorrect OTP.");
-  sessionStorage.setItem("perago_verified","1");registerDetails(phone);
- };
-}
-
-function registerDetails(phone){
- const box=document.querySelector("#authbox");
- box.innerHTML=`<div class="steps"><i class="step on"></i><i class="step on"></i><i class="step on"></i></div>
- <div class="card"><h2>Your details</h2><p class="muted">OTP verified. Complete your registration.</p>
- <div class="field"><label>NAME</label><input id="name" placeholder="Your name"></div>
- <div class="field"><label>EMAIL</label><input id="email" type="email" placeholder="you@example.com"></div>
- <div class="field"><label>MOBILE NUMBER</label><input value="${phone}" disabled></div>
- <button class="primary" id="details">Continue to PIN</button></div>`;
- document.querySelector("#details").onclick=()=>{
-  const name=document.querySelector("#name").value.trim(),email=document.querySelector("#email").value.trim();
-  if(name.length<2)return toast("Enter your name.");if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast("Enter a valid email.");
-  sessionStorage.setItem("perago_name",name);sessionStorage.setItem("perago_email",email);pinSetup(phone);
- };
-}
-
-function pinSetup(phone){
- const box=document.querySelector("#authbox");
- box.innerHTML=`<div class="card"><h2>Create your 4-digit PIN</h2><p class="muted">Your mobile number is shown above your PIN.</p>
- <div style="text-align:center;font-size:20px;font-weight:900;color:#ffd21a;margin:18px 0">${phone}</div>
- <div class="field"><label>4-DIGIT PIN</label><input id="pin1" inputmode="numeric" maxlength="4" type="password" placeholder="••••"></div>
- <div class="field"><label>CONFIRM PIN</label><input id="pin2" inputmode="numeric" maxlength="4" type="password" placeholder="••••"></div>
- <button class="primary" id="finish">Create PIN & Register</button></div>`;
- document.querySelector("#finish").onclick=async()=>{
-  const p1=document.querySelector("#pin1").value,p2=document.querySelector("#pin2").value;
-  if(!validPin(p1))return toast("PIN must be exactly 4 digits.");if(p1!==p2)return toast("PINs do not match.");
-  try{
-   const u=await ensureSessionUser();
-   await setDoc(doc(db,"users",u.uid),{uid:u.uid,name:sessionStorage.getItem("perago_name"),email:sessionStorage.getItem("perago_email"),phone,balance:1000,pin:p1,createdAt:serverTimestamp()});
-   sessionStorage.clear();toast("Registration complete.");dashboard(u);
-  }catch(e){toast(e.message)}
- };
 }
 
 async function pinLogin(user){

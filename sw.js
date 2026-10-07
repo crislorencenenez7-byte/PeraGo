@@ -1,4 +1,4 @@
-const CACHE_NAME = "perago-v3";
+const CACHE_NAME = "perago-v4";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
@@ -14,6 +14,12 @@ self.addEventListener("activate", (event) => {
       )
     ).then(() => self.clients.claim())
   );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("fetch", (event) => {
