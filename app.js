@@ -229,354 +229,145 @@ async function pinLogin(user){
  document.querySelector("#back").onclick=()=>authScreen("login");
 }
 
-async function dashboard(u){
- const s=await getDoc(doc(db,"users",u.uid));
- const d=s.data()||{};
+async 
+function servicePage(title,icon,subtitle,body,u){
+ root.innerHTML=`<main class="pg-service-page">
+  <header class="pg-service-header">
+   <button class="pg-service-back" id="serviceBack">‹</button>
+   <div class="pg-service-title">${title}</div>
+  </header>
 
- root.innerHTML=`
- <div class="shell perago-dashboard">
-
-  <div class="pg-header">
-   <div class="pg-topbar">
-    <div class="pg-brand">
-     <img src="assets/perago-logo.svg">
-     <span>PeraGo</span>
-    </div>
-
-    <div class="pg-header-actions">
-     <button class="pg-icon" id="notifBtn" aria-label="Notifications">♧</button>
-     <button class="pg-icon" id="menuBtn" aria-label="Menu">☰</button>
-    </div>
-   </div>
-
-   <section class="pg-balance-card">
-    <div class="pg-account-row">
-     <div>
-      <div class="pg-small">Hello,</div>
-      <div class="pg-name">${esc(d.name||"PeraGo User")}</div>
-      <div class="pg-account">PeraGo Account</div>
-     </div>
-     <div class="pg-qr">▦</div>
-    </div>
-
-    <div class="pg-balance-row">
-     <div>
-      <div class="pg-balance">${peso(d.balance)}</div>
-      <div class="pg-available">Available Balance</div>
-     </div>
-     <button class="pg-cash-btn" id="cashInBtn">＋ Cash In</button>
-    </div>
-   </section>
-  </div>
-
-  <section class="pg-actions-card">
-
-   <button class="pg-action" id="sendBtn">
-    <span class="pg-action-icon">➤</span>
-    <span>Send Money</span>
-   </button>
-
-   <button class="pg-action" id="receiveBtn">
-    <span class="pg-action-icon">⇩</span>
-    <span>Receive Money</span>
-   </button>
-
-   <button class="pg-action" id="cashInAction">
-    <span class="pg-action-icon">▣</span>
-    <span>Cash In</span>
-   </button>
-
-   <button class="pg-action" id="cashOutBtn">
-    <span class="pg-action-icon">▤</span>
-    <span>Cash Out</span>
-   </button>
-
-   <button class="pg-action" id="billsBtn">
-    <span class="pg-action-icon">☷</span>
-    <span>Pay Bills</span>
-   </button>
-
-   <button class="pg-action" id="loadBtn">
-    <span class="pg-action-icon">▯</span>
-    <span>Buy Load</span>
-   </button>
-
-   <button class="pg-action" id="emoneyBtn">
-    <span class="pg-action-icon">▦</span>
-    <span>eMoney</span>
-   </button>
-
-   <button class="pg-action" id="moreBtn">
-    <span class="pg-action-icon">⠿</span>
-    <span>More</span>
-   </button>
-
+  <section class="pg-service-hero">
+   <div class="pg-service-icon material-symbols-rounded">${icon}</div>
+   <h1>${title}</h1>
+   <p>${subtitle}</p>
   </section>
 
-  <section class="pg-promo">
-   <div>
-    <div class="pg-promo-small">Simple. Secure. Go.</div>
-    <div class="pg-promo-title">PeraGo</div>
-    <div class="pg-promo-text">Your money, your way.</div>
-   </div>
-   <div class="pg-promo-mark">₱</div>
+  <section class="pg-service-card">
+   ${body}
   </section>
+ </main>`;
 
-  <div class="pg-dots">
-   <i class="active"></i><i></i><i></i>
-  </div>
+ document.querySelector("#serviceBack").onclick=()=>dashboard(u);
+}
 
-  <section class="pg-recent">
-   <div class="pg-section-title">
-    <strong>Recent Transactions</strong>
-    <button id="viewTransactions">View All ›</button>
+function sendMoneyPage(u){
+ servicePage(
+  "Send Money",
+  "send_money",
+  "Send money to another PeraGo user.",
+  `<div class="field">
+    <label>RECIPIENT MOBILE NUMBER</label>
+    <input id="serviceRecipient" inputmode="numeric" maxlength="11" placeholder="09XXXXXXXXX">
    </div>
-
-   <div class="pg-empty-transaction">
-    <div class="pg-transaction-icon">₱</div>
-    <div>
-     <strong>No recent transactions</strong>
-     <div>Transactions will appear here.</div>
-    </div>
+   <div class="field">
+    <label>AMOUNT</label>
+    <input id="serviceAmount" type="number" min="1" placeholder="₱0.00">
    </div>
-  </section>
+   <button class="primary" id="serviceContinue">Continue</button>`,
+  u
+ );
+}
 
-  <div id="dashboardPanel"></div>
+function receiveMoneyPage(u){
+ servicePage(
+  "Receive Money",
+  "account_balance_wallet",
+  "Receive money securely through your PeraGo account.",
+  `<div class="pg-service-info">
+    <div class="material-symbols-rounded">qr_code_2</div>
+    <h3>Your PeraGo QR</h3>
+    <p>Show your QR code to another PeraGo user.</p>
+   </div>
+   <button class="primary" id="showQr">Show QR Code</button>`,
+  u
+ );
+}
 
-  <nav class="pg-bottom-nav">
-   <button class="pg-nav active" id="homeNav">
-    <span>⌂</span>
-    <small>Home</small>
-   </button>
+function cashInPage(u){
+ servicePage(
+  "Cash In",
+  "add_card",
+  "Add money to your PeraGo wallet.",
+  `<div class="pg-service-option">
+    <div class="material-symbols-rounded">account_balance</div>
+    <div><b>Bank Transfer</b><small>Add funds from your bank.</small></div>
+   </div>
+   <div class="pg-service-option">
+    <div class="material-symbols-rounded">storefront</div>
+    <div><b>Cash In Center</b><small>Find a nearby cash-in location.</small></div>
+   </div>`,
+  u
+ );
+}
 
-   <button class="pg-nav" id="transactionsNav">
-    <span>▦</span>
-    <small>Transactions</small>
-   </button>
+function cashOutPage(u){
+ servicePage(
+  "Cash Out",
+  "payments",
+  "Withdraw money from your PeraGo wallet.",
+  `<div class="field">
+    <label>AMOUNT</label>
+    <input id="cashOutAmount" type="number" min="1" placeholder="₱0.00">
+   </div>
+   <button class="primary">Continue</button>`,
+  u
+ );
+}
 
-   <button class="pg-nav" id="billsNav">
-    <span>♢</span>
-    <small>Bills</small>
-   </button>
+function billsPage(u){
+ servicePage(
+  "Pay Bills",
+  "receipt_long",
+  "Pay your bills using PeraGo.",
+  `<div class="pg-service-option"><div class="material-symbols-rounded">bolt</div><div><b>Electricity</b><small>Pay your electricity bill.</small></div></div>
+   <div class="pg-service-option"><div class="material-symbols-rounded">water_drop</div><div><b>Water</b><small>Pay your water bill.</small></div></div>
+   <div class="pg-service-option"><div class="material-symbols-rounded">wifi</div><div><b>Internet</b><small>Pay your internet bill.</small></div></div>`,
+  u
+ );
+}
 
-   <button class="pg-nav" id="accountNav">
-    <span>♙</span>
-    <small>Account</small>
-   </button>
-  </nav>
+function loadPage(u){
+ servicePage(
+  "Buy Load",
+  "phone_android",
+  "Buy mobile load for any supported number.",
+  `<div class="field">
+    <label>MOBILE NUMBER</label>
+    <input inputmode="numeric" maxlength="11" placeholder="09XXXXXXXXX">
+   </div>
+   <div class="pg-load-grid">
+    <button>₱20</button>
+    <button>₱50</button>
+    <button>₱100</button>
+    <button>₱200</button>
+   </div>`,
+  u
+ );
+}
 
- </div>`;
+function emoneyPage(u){
+ servicePage(
+  "eMoney",
+  "account_balance",
+  "Manage your digital money services.",
+  `<div class="pg-service-info">
+    <div class="material-symbols-rounded">account_balance_wallet</div>
+    <h3>eMoney Services</h3>
+    <p>Additional PeraGo financial services will appear here.</p>
+   </div>`,
+  u
+ );
+}
 
- const panel=()=>document.querySelector("#dashboardPanel");
+function morePage(u){
+ servicePage(
+  "More",
+  "apps",
+  "Explore more PeraGo services.",
+  `<div class="pg-service-option"><div class="material-symbols-rounded">settings</div><div><b>Settings</b><small>Manage your PeraGo preferences.</small></div></div>
+   <div class="pg-service-option"><div class="material-symbols-rounded">help</div><div><b>Help Center</b><small>Get help with PeraGo.</small></div></div>`,
+  u
+ );
 
- const comingSoon=(name)=>{
-  toast(name+" is coming soon.");
- };
-
- document.querySelector("#notifBtn").onclick=()=>comingSoon("Notifications");
- document.querySelector("#menuBtn").onclick=()=>comingSoon("Menu");
- document.querySelector("#cashInBtn").onclick=()=>comingSoon("Cash In");
- document.querySelector("#cashInAction").onclick=()=>comingSoon("Cash In");
- document.querySelector("#receiveBtn").onclick=()=>comingSoon("Receive Money");
- document.querySelector("#cashOutBtn").onclick=()=>comingSoon("Cash Out");
- document.querySelector("#billsBtn").onclick=()=>comingSoon("Pay Bills");
- document.querySelector("#loadBtn").onclick=()=>comingSoon("Buy Load");
- document.querySelector("#emoneyBtn").onclick=()=>comingSoon("eMoney");
- document.querySelector("#moreBtn").onclick=()=>comingSoon("More");
- document.querySelector("#viewTransactions").onclick=()=>comingSoon("Transactions");
- document.querySelector("#transactionsNav").onclick=()=>comingSoon("Transactions");
- document.querySelector("#billsNav").onclick=()=>comingSoon("Bills");
-
- document.querySelector("#accountNav").onclick=()=>{
-  root.innerHTML=`
-   <div class="pg-profile-page">
-
-    <header class="pg-profile-header">
-     <button class="pg-back" id="profileBack">‹</button>
-
-     <div class="pg-profile-title">
-      <img src="assets/perago-logo.svg">
-      <span>Profile</span>
-     </div>
-
-     <div style="width:40px"></div>
-    </header>
-
-    <section class="pg-profile-card">
-
-     <div class="pg-profile-avatar">
-      ${esc((d.name||"P").charAt(0).toUpperCase())}
-     </div>
-
-     <h2>${esc(d.name||"PeraGo User")}</h2>
-     <p>${esc(d.phone||"")}</p>
-
-     <div class="pg-profile-info">
-
-      <div class="pg-info-row">
-       <span>Name</span>
-       <strong>${esc(d.name||"")}</strong>
-      </div>
-
-      <div class="pg-info-row">
-       <span>Number</span>
-       <strong>${esc(d.phone||"")}</strong>
-      </div>
-
-      <div class="pg-info-row">
-       <span>Email</span>
-       <strong>${esc(d.email||"")}</strong>
-      </div>
-
-      <div class="pg-info-row">
-       <span>Verified</span>
-       <strong>${d.verified===true?"Yes":"No"}</strong>
-      </div>
-
-      <div class="pg-info-row">
-       <span>Birthday</span>
-       <strong>${esc(d.birthday||"")}</strong>
-      </div>
-
-      <div class="pg-info-row">
-       <span>Filipino</span>
-       <strong>${esc(d.filipino||"")}</strong>
-      </div>
-
-     </div>
-
-     <button class="primary pg-profile-action" id="profileLogout">
-      Log out
-     </button>
-
-    </section>
-
-   </div>`;
-
-  document.querySelector("#profileBack").onclick=()=>{
-   dashboard(u);
-  };
-
-  document.querySelector("#profileLogout").onclick=()=>{
-   sessionStorage.clear();
-   authScreen("login");
-  };
- };
-
-
- document.querySelector("#sendBtn").onclick=()=>{
-  panel().innerHTML=`
-   <section class="card pg-panel">
-    <div class="pg-panel-head">
-     <h2>Send Money</h2>
-     <button class="pg-close" id="closeSend">×</button>
-    </div>
-
-    <p class="muted">Send money to another PeraGo mobile number.</p>
-
-    <div class="field">
-     <label>RECIPIENT MOBILE NUMBER</label>
-     <input id="sendPhone" inputmode="numeric" maxlength="11" placeholder="09XXXXXXXXX">
-    </div>
-
-    <div class="field">
-     <label>AMOUNT</label>
-     <input id="sendAmount" inputmode="decimal" type="number" min="1" step="0.01" placeholder="₱0.00">
-    </div>
-
-    <button class="primary" id="continueSend">Continue</button>
-   </section>`;
-
-  document.querySelector("#closeSend").onclick=()=>panel().innerHTML="";
-
-  document.querySelector("#continueSend").onclick=()=>{
-   const phone=document.querySelector("#sendPhone").value.trim();
-   const amount=Number(document.querySelector("#sendAmount").value);
-
-   if(!validPhone(phone))
-    return toast("Enter a valid 11-digit PH number.");
-
-   if(!Number.isFinite(amount)||amount<=0)
-    return toast("Enter a valid amount.");
-
-   panel().innerHTML=`
-    <section class="card pg-panel">
-     <div class="pg-panel-head">
-      <h2>Confirm Transfer</h2>
-      <button class="pg-close" id="cancelSend">×</button>
-     </div>
-
-     <p class="muted">Please check the details before confirming.</p>
-
-     <div class="field">
-      <label>RECIPIENT</label>
-      <input value="${esc(phone)}" readonly>
-     </div>
-
-     <div class="field">
-      <label>AMOUNT</label>
-      <input value="${peso(amount)}" readonly>
-     </div>
-
-     <button class="primary" id="confirmSend">Confirm Send</button>
-    </section>`;
-
-   document.querySelector("#cancelSend").onclick=()=>panel().innerHTML="";
-
-   document.querySelector("#confirmSend").onclick=()=>{
-    panel().innerHTML=`
-     <section class="card pg-panel pg-success">
-      <div class="pg-success-icon">✓</div>
-      <h2>Transfer Successful</h2>
-      <p class="muted">Prototype transfer completed.</p>
-
-      <div class="field">
-       <label>RECIPIENT</label>
-       <input value="${esc(phone)}" readonly>
-      </div>
-
-      <div class="field">
-       <label>AMOUNT</label>
-       <input value="${peso(amount)}" readonly>
-      </div>
-
-      <button class="primary" id="doneSend">Done</button>
-     </section>`;
-
-    document.querySelector("#doneSend").onclick=()=>panel().innerHTML="";
-   };
-  };
- };
-
- document.querySelector("#homeNav").onclick=()=>{
-  panel().innerHTML="";
- };
-}onAuthStateChanged(auth,()=>{if(!sessionStorage.getItem("perago_logged"))authScreen("login")});
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", async () => {
-    try {
-      const registration = await navigator.serviceWorker.register("./sw.js", {
-        updateViaCache: "none"
-      });
-
-      await registration.update();
-
-      registration.addEventListener("updatefound", () => {
-        const worker = registration.installing;
-        if (!worker) return;
-
-        worker.addEventListener("statechange", () => {
-          if (worker.state === "installed" && navigator.serviceWorker.controller) {
-            worker.postMessage({ type: "SKIP_WAITING" });
-          }
-        });
-      });
-    } catch (error) {
-      console.error("Service worker update failed:", error);
-    }
-  });
-
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    window.location.reload();
-  });
 }
