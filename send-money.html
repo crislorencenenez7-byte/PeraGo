@@ -2,171 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-  <title>Send Money - PeraGo</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1769ff">
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <title>Send Money — PeraGo</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-
-<style id="perago-premium-1750">
-:root{
-  --pg-bg:#f4f7fb;--pg-card:#ffffff;--pg-text:#101828;--pg-muted:#667085;
-  --pg-border:#e7ecf3;--pg-accent:#0b6bff;--pg-accent2:#13a8ff;
-  --pg-shadow:0 14px 40px rgba(16,24,40,.08);
-}
-body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
-.pg-brandbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;margin:0 0 18px;border-radius:20px;background:linear-gradient(135deg,#0b6bff,#13a8ff);color:#fff;box-shadow:0 12px 30px rgba(11,107,255,.20)}
-.pg-brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.2px}
-.pg-logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);font-weight:900;font-size:21px}
-.pg-brand small{display:block;font-weight:500;opacity:.82;font-size:11px;margin-top:1px}
-.pg-profile-dot{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#0b6bff;font-weight:800;text-decoration:none}
-.pg-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:9px;margin:16px 0 22px;border:1px solid var(--pg-border);border-radius:22px;background:rgba(255,255,255,.9);box-shadow:var(--pg-shadow)}
-.pg-tab{min-height:58px;border-radius:16px;text-decoration:none;color:var(--pg-muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:700;transition:.18s}
-.pg-tab:hover{background:#f1f6ff;color:#0b6bff}
-.pg-tab-icon{font-size:20px;line-height:1;font-weight:900}
-.pg-tab[href="__CURRENT__"]{background:#eaf2ff;color:#0b6bff}
-.pg-page-title{font-weight:900;letter-spacing:-.4px}
-.pg-section-card{background:var(--pg-card);border:1px solid var(--pg-border);border-radius:24px;box-shadow:var(--pg-shadow)}
-@media(max-width:520px){.pg-brandbar{padding:12px 14px}.pg-nav{gap:5px;padding:7px}.pg-tab{min-height:54px}.pg-tab-icon{font-size:18px}}
-</style>
-
-<div class="pg-brandbar">
-  <div class="pg-brand">
-    <div class="pg-logo">₱</div>
-    <div>PeraGo<small>Your smart wallet</small></div>
-  </div>
-  <a class="pg-profile-dot" href="profile.html" aria-label="Profile">P</a>
-</div>
-<nav class="pg-nav" aria-label="PeraGo navigation">
-  <a class="pg-tab" href="index.html" aria-label="Home"><span class="pg-tab-icon">⌂</span><span>Home</span></a><a class="pg-tab" href="send-money.html" aria-label="Send"><span class="pg-tab-icon">↗</span><span>Send</span></a><a class="pg-tab" href="qr.html" aria-label="QR"><span class="pg-tab-icon">▣</span><span>QR</span></a><a class="pg-tab" href="profile.html" aria-label="Profile"><span class="pg-tab-icon">◉</span><span>Profile</span></a>
-</nav>
-
-
-  <main class="page">
-
-    <header class="page-header">
-      <button
-        type="button"
-        onclick="history.back()"
-        class="back-btn"
-      >
-        ←
-      </button>
-
-      <h1>Send Money</h1>
-    </header>
-
-    <section id="formSection" class="card">
-
-      <div class="input-group">
-        <label for="recipient">
-          Recipient Mobile Number
-        </label>
-
-        <input
-          id="recipient"
-          type="tel"
-          inputmode="numeric"
-          autocomplete="tel"
-          placeholder="09XXXXXXXXX"
-        >
-
-        <small>
-          Enter the mobile number registered with PeraGo.
-        </small>
+<div class="app-page">
+  <header class="app-header">
+    <div class="app-header-row">
+      <div class="app-brand">
+        <div class="app-brand-mark">P</div>
+        <div><div class="app-brand-name">PeraGo</div><div class="app-brand-sub">Fast, simple transfers</div></div>
       </div>
+      <a class="app-profile" href="profile.html" aria-label="Profile">P</a>
+    </div>
+  </header>
 
+  <main class="page-content">
+    <div class="page-title-row">
+      <button class="back-btn" type="button" onclick="history.back()" aria-label="Go back">‹</button>
+      <div><h1 class="page-title">Send Money</h1><p class="page-subtitle">Transfer demo funds to another PeraGo user.</p></div>
+    </div>
+
+    <section id="formSection" class="app-card">
+      <div class="section-kicker" style="color:#8b99ad;margin-bottom:15px">TRANSFER DETAILS</div>
       <div class="input-group">
-        <label for="amount">
-          Amount
-        </label>
-
-        <input
-          id="amount"
-          type="number"
-          inputmode="decimal"
-          min="1"
-          step="0.01"
-          placeholder="0.00"
-        >
+        <label for="recipient">Recipient Mobile Number</label>
+        <input id="recipient" type="tel" inputmode="numeric" autocomplete="tel" placeholder="09XXXXXXXXX">
+        <small>Enter the mobile number registered with PeraGo.</small>
       </div>
-
-      <button
-        id="continueBtn"
-        type="button"
-        class="primary-btn"
-        disabled
-      >
-        Continue
-      </button>
-
+      <div class="input-group">
+        <label for="amount">Amount</label>
+        <div style="position:relative">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-weight:900;color:#7a899f">₱</span>
+          <input id="amount" type="number" inputmode="decimal" min="1" step="0.01" placeholder="0.00" style="padding-left:32px">
+        </div>
+      </div>
+      <button id="continueBtn" type="button" class="primary-btn full-btn" disabled>Continue</button>
     </section>
 
-    <section
-      id="confirmBox"
-      class="card"
-      style="display:none;"
-    >
-
-      <h2>Confirm Transfer</h2>
-
-      <div class="confirm-row">
-        <span>Recipient</span>
-        <strong id="confirmRecipient">—</strong>
-      </div>
-
-      <div class="confirm-row">
-        <span>Amount</span>
-        <strong id="confirmAmount">₱0.00</strong>
-      </div>
-
-      <div class="confirm-row">
-        <span>Available Balance</span>
-        <strong id="confirmBalance">₱0.00</strong>
-      </div>
-
+    <section id="confirmBox" class="app-card" style="display:none">
+      <div class="section-kicker" style="color:#8b99ad;margin-bottom:6px">REVIEW TRANSFER</div>
+      <h2 class="confirm-title">Confirm Transfer</h2>
+      <div class="confirm-row"><span>Recipient</span><strong id="confirmRecipient">—</strong></div>
+      <div class="confirm-row"><span>Amount</span><strong id="confirmAmount">₱0.00</strong></div>
+      <div class="confirm-row"><span>Available Balance</span><strong id="confirmBalance">₱0.00</strong></div>
       <div class="confirm-actions">
-
-        <button
-          id="cancelBtn"
-          type="button"
-          class="secondary-btn"
-        >
-          Cancel
-        </button>
-
-        <button
-          id="confirmBtn"
-          type="button"
-          class="primary-btn"
-        >
-          Confirm Transfer
-        </button>
-
+        <button id="cancelBtn" type="button" class="secondary-btn">Cancel</button>
+        <button id="confirmBtn" type="button" class="primary-btn">Confirm Transfer</button>
       </div>
-
     </section>
 
-    <div
-      id="sendMessage"
-      class="auth-message"
-    ></div>
-
+    <div id="sendMessage" class="auth-message"></div>
+    <div class="status-note" style="margin-top:9px"><span>🛡️</span><div><strong>Safe demo transfer</strong> PeraGo is a demo wallet. Transfers do not represent real-money movement.</div></div>
   </main>
 
-  <script type="module">
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="nav-item" type="button" onclick="window.location.href='index.html'"><span>⌂</span><small>Home</small></button>
+    <button class="nav-item active" type="button"><span>➤</span><small>Send</small></button>
+    <button class="nav-item qr-main" type="button" onclick="window.location.href='qr.html'"><span>▦</span><small>QR</small></button>
+    <button class="nav-item" type="button" onclick="window.location.href='index.html#transactions'"><span>◷</span><small>History</small></button>
+    <button class="nav-item" type="button" onclick="window.location.href='profile.html'"><span>●</span><small>Profile</small></button>
+  </nav>
+</div>
+<script type="module">
 
     import {
       auth,
       findWalletByPhone,
       getCurrentWallet,
       createTransferRequest,
-      formatPeso
+      formatPeso,
+      normalizePhone
     } from "./wallet-firestore.js";
 
     import { addTransaction } from "./wallet.js";
@@ -212,30 +122,6 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
     let recipientWallet = null;
     let normalizedRecipient = "";
     let transferLocked = false;
-
-    function normalizePhone(phone) {
-      let value = String(phone || "")
-        .trim()
-        .replace(/[^0-9+]/g, "");
-
-      if (value.startsWith("09") && value.length === 11) {
-        return "+63" + value.substring(1);
-      }
-
-      if (value.startsWith("9") && value.length === 10) {
-        return "+63" + value;
-      }
-
-      if (value.startsWith("639") && value.length === 12) {
-        return "+" + value;
-      }
-
-      if (value.startsWith("+639") && value.length === 13) {
-        return value;
-      }
-
-      return null;
-    }
 
     onAuthStateChanged(auth, (user) => {
       currentUser = user;
@@ -325,9 +211,19 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
           );
         }
 
-        confirmRecipient.innerHTML =
-          `<span style="display:block;">${recipientWallet.name || "Unknown User"}</span>` +
-          `<small style="display:block;margin-top:4px;color:#64748b;">${recipientWallet.phone || normalizedRecipient}</small>`;
+        confirmRecipient.replaceChildren();
+
+        const recipientName = document.createElement("span");
+        recipientName.style.display = "block";
+        recipientName.textContent = recipientWallet.name || "Unknown User";
+
+        const recipientPhone = document.createElement("small");
+        recipientPhone.style.display = "block";
+        recipientPhone.style.marginTop = "4px";
+        recipientPhone.style.color = "#64748b";
+        recipientPhone.textContent = recipientWallet.phone || normalizedRecipient;
+
+        confirmRecipient.append(recipientName, recipientPhone);
 
         confirmAmount.textContent =
           formatPeso(amount);
@@ -340,7 +236,7 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
 
       } catch (error) {
 
-        console.error("FULL TRANSFER ERROR:", error.code, error.message, error); console.error(
+        console.error(
           "Send Money error:",
           error
         );
@@ -415,13 +311,13 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
         });
 
         confirmBtn.textContent =
-          "✓ Request Sent";
+          "✓ Transfer Complete";
 
         confirmBtn.style.background =
           "#16a34a";
 
         message.textContent =
-          "Transfer request created successfully.";
+          "Transfer completed successfully.";
 
         setTimeout(() => {
           window.location.href = "index.html";
@@ -429,7 +325,7 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
 
       } catch (error) {
 
-        console.error("FULL TRANSFER ERROR:", error.code, error.message, error); console.error(
+        console.error(
           "Transfer request error:",
           error
         );

@@ -16,31 +16,7 @@ sed -i "s/perago-v${VERSION}/perago-v${NEXT}/g" "$SW_FILE"
 
 echo "PeraGo Service Worker: v${VERSION} → v${NEXT}"
 
-git add \
-  index.html \
-  sw.js \
-  styles.css \
-  script.js \
-  auth.css \
-  auth.js \
-  firebase-auth.js \
-  firebase-config.js \
-  session.js \
-  pin.js \
-  wallet.js \
-  wallet-firestore.js \
-  send-money.html \
-  qr.html \
-  profile.html \
-  change-pin.html \
-  register.html \
-  forgot-pin.html \
-  reset-pin.html \
-  set-pin.html \
-  pin-lock.html \
-  manifest.json \
-  icon-192.png \
-  icon-512.png
+git add .
 
 echo ""
 echo "Staged changes:"
