@@ -218,7 +218,20 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
 
   <script type="module">
 
+    import "./firebase-auth.js";
     import { savePin } from "./pin.js";
+
+    let resetReady = false;
+    const resetLinkResult = await window.completePinResetLink();
+
+    if (!resetLinkResult.success) {
+      const resetMessage = document.getElementById("message");
+      resetMessage.textContent = resetLinkResult.message;
+      resetMessage.style.color = "#dc2626";
+    } else {
+      resetReady = true;
+      window.history.replaceState?.({}, document.title, "reset-pin.html");
+    }
 
     let enteredPin = "";
     let firstPin = "";
@@ -250,7 +263,7 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
 
     async function processPin() {
 
-      if (enteredPin.length !== 6 || locked) {
+      if (!resetReady || enteredPin.length !== 6 || locked) {
         return;
       }
 
@@ -314,7 +327,7 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
 
       message.style.color = "#16a34a";
       message.textContent =
-        "PIN changed successfully!";
+        "PIN reset successfully!";
 
       setTimeout(() => {
         window.location.href = "pin-lock.html";

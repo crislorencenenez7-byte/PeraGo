@@ -1,5 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 import {
   getFirestore,
   doc,
@@ -13,8 +16,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+const PIN_LENGTH = 6;
+
 async function hashPin(pin) {
-  const data = new TextEncoder().encode(pin);
+  const data = new TextEncoder().encode(String(pin));
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(hashBuffer))
     .map(byte => byte.toString(16).padStart(2, "0"))
@@ -26,12 +31,14 @@ export async function hasPin() {
   if (!user) return false;
 
   const snap = await getDoc(doc(db, "users", user.uid));
-  return snap.exists() && !!snap.data().pinHash;
+  return snap.exists() && typeof snap.data().pinHash === "string" && !!snap.data().pinHash;
 }
 
 export async function savePin(pin) {
-  if (!/^\d{4}$/.test(pin)) {
-    throw new Error("PIN must be exactly 4 digits.");
+  const value = String(pin || "").trim();
+
+  if (!new RegExp(`^\\d{${PIN_LENGTH}}$`).test(value)) {
+    throw new Error(`PIN must be exactly ${PIN_LENGTH} digits.`);
   }
 
   const user = auth.currentUser;
@@ -39,7 +46,7 @@ export async function savePin(pin) {
     throw new Error("You must be logged in.");
   }
 
-  const pinHash = await hashPin(pin);
+  const pinHash = await hashPin(value);
 
   await setDoc(
     doc(db, "users", user.uid),
@@ -49,20 +56,22 @@ export async function savePin(pin) {
 }
 
 export async function checkPin(pin) {
-  if (!/^\d{4}$/.test(pin)) return false;
+  const value = String(pin || "").trim();
+
+  if (!new RegExp(`^\\d{${PIN_LENGTH}}$`).test(value)) {
+    return false;
+  }
 
   const user = auth.currentUser;
   if (!user) return false;
 
   const snap = await getDoc(doc(db, "users", user.uid));
-
   if (!snap.exists()) return false;
 
   const savedHash = snap.data().pinHash;
-  if (!savedHash) return false;
+  if (typeof savedHash !== "string" || !savedHash) return false;
 
-  const enteredHash = await hashPin(pin);
-
+  const enteredHash = await hashPin(value);
   return savedHash === enteredHash;
 }
 
@@ -76,3 +85,7 @@ export async function removePin() {
     { merge: true }
   );
 }
+
+export { auth, db, PIN_LENGTH };
+
+onAuthStateChanged(auth, () => {});

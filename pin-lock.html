@@ -194,9 +194,11 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
     <section class="pin-card">
 
       <h2>Enter your PIN</h2>
-      <p class="subtitle">Enter your 4-digit PIN to continue.</p>
+      <p class="subtitle">Enter your 6-digit PIN to continue.</p>
 
       <div class="pin-dots" id="pinDots">
+        <span class="pin-dot"></span>
+        <span class="pin-dot"></span>
         <span class="pin-dot"></span>
         <span class="pin-dot"></span>
         <span class="pin-dot"></span>
@@ -268,24 +270,19 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
   
 
 <script type="module">
-
-    import { checkPin } from "./pin.js";
+    import { checkPin, PIN_LENGTH } from "./pin.js";
 
     let enteredPin = "";
+    let locked = false;
 
     const dots = document.querySelectorAll(".pin-dot");
     const message = document.getElementById("pinMessage");
     const deleteBtn = document.getElementById("deleteBtn");
 
     function updateDots() {
-
       dots.forEach((dot, index) => {
-        dot.classList.toggle(
-          "filled",
-          index < enteredPin.length
-        );
+        dot.classList.toggle("filled", index < enteredPin.length);
       });
-
     }
 
     function clearPin() {
@@ -294,68 +291,56 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
     }
 
     async function unlock() {
+      if (enteredPin.length !== PIN_LENGTH || locked) return;
 
-      if (enteredPin.length !== 4) {
-        return;
-      }
+      locked = true;
 
-      if (await checkPin(enteredPin)) {
+      try {
+        if (await checkPin(enteredPin)) {
+          message.style.color = "#16a34a";
+          message.textContent = "Unlocked!";
+          sessionStorage.setItem("perago_unlocked", "true");
 
-        message.style.color = "#16a34a";
-        message.textContent = "Unlocked!";
-
-        sessionStorage.setItem(
-          "perago_unlocked",
-          "true"
-        );
-
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 350);
-
-      } else {
-
-        message.style.color = "#dc2626";
-        message.textContent = "Incorrect PIN.";
-
-        clearPin();
-
-      }
-
-    }
-
-    document.querySelectorAll("[data-key]").forEach(button => {
-
-      button.addEventListener("click", () => {
-
-        if (enteredPin.length >= 4) {
+          setTimeout(() => {
+            window.location.replace("index.html");
+          }, 350);
           return;
         }
 
+        message.style.color = "#dc2626";
+        message.textContent = "Incorrect PIN.";
+        clearPin();
+      } catch (error) {
+        console.error("PIN unlock error:", error);
+        message.style.color = "#dc2626";
+        message.textContent = "Unable to verify PIN. Please try again.";
+        clearPin();
+      } finally {
+        locked = false;
+      }
+    }
+
+    document.querySelectorAll("[data-key]").forEach(button => {
+      button.addEventListener("click", () => {
+        if (enteredPin.length >= PIN_LENGTH || locked) return;
+
         enteredPin += button.dataset.key;
-
         message.textContent = "";
-
         updateDots();
 
-        if (enteredPin.length === 4) {
+        if (enteredPin.length === PIN_LENGTH) {
           setTimeout(unlock, 120);
         }
-
       });
-
     });
 
-    deleteBtn.addEventListener("click", () => {
-
-      if (enteredPin.length > 0) {
+    deleteBtn?.addEventListener("click", () => {
+      if (enteredPin.length > 0 && !locked) {
         enteredPin = enteredPin.slice(0, -1);
         message.textContent = "";
         updateDots();
       }
-
     });
-
   </script>
 
 

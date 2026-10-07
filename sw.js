@@ -12,6 +12,7 @@ const APP_FILES = [
   "./qr.html",
   "./profile.html",
   "./change-pin.html",
+  "./update-schedule.json",
   "./styles.css",
   "./script.js",
   "./auth.css",

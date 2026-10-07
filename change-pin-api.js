@@ -19,10 +19,10 @@ export default async function handler(req, res) {
   try {
     const { uid, currentPin, newPin } = req.body || {};
 
-    if (!uid || !/^\d{4}$/.test(String(currentPin || "")) || !/^\d{4}$/.test(String(newPin || ""))) {
+    if (!uid || !/^\d{6}$/.test(String(currentPin || "")) || !/^\d{6}$/.test(String(newPin || ""))) {
       return res.status(400).json({
         success: false,
-        message: "User ID, current PIN, and new 4-digit PIN are required."
+        message: "User ID, current PIN, and new 6-digit PIN are required."
       });
     }
 

@@ -166,7 +166,8 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
       findWalletByPhone,
       getCurrentWallet,
       createTransferRequest,
-      formatPeso
+      formatPeso,
+      normalizePhone
     } from "./wallet-firestore.js";
 
     import { addTransaction } from "./wallet.js";
@@ -212,30 +213,6 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
     let recipientWallet = null;
     let normalizedRecipient = "";
     let transferLocked = false;
-
-    function normalizePhone(phone) {
-      let value = String(phone || "")
-        .trim()
-        .replace(/[^0-9+]/g, "");
-
-      if (value.startsWith("09") && value.length === 11) {
-        return "+63" + value.substring(1);
-      }
-
-      if (value.startsWith("9") && value.length === 10) {
-        return "+63" + value;
-      }
-
-      if (value.startsWith("639") && value.length === 12) {
-        return "+" + value;
-      }
-
-      if (value.startsWith("+639") && value.length === 13) {
-        return value;
-      }
-
-      return null;
-    }
 
     onAuthStateChanged(auth, (user) => {
       currentUser = user;
@@ -325,9 +302,19 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
           );
         }
 
-        confirmRecipient.innerHTML =
-          `<span style="display:block;">${recipientWallet.name || "Unknown User"}</span>` +
-          `<small style="display:block;margin-top:4px;color:#64748b;">${recipientWallet.phone || normalizedRecipient}</small>`;
+        confirmRecipient.replaceChildren();
+
+        const recipientName = document.createElement("span");
+        recipientName.style.display = "block";
+        recipientName.textContent = recipientWallet.name || "Unknown User";
+
+        const recipientPhone = document.createElement("small");
+        recipientPhone.style.display = "block";
+        recipientPhone.style.marginTop = "4px";
+        recipientPhone.style.color = "#64748b";
+        recipientPhone.textContent = recipientWallet.phone || normalizedRecipient;
+
+        confirmRecipient.append(recipientName, recipientPhone);
 
         confirmAmount.textContent =
           formatPeso(amount);
@@ -340,7 +327,7 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
 
       } catch (error) {
 
-        console.error("FULL TRANSFER ERROR:", error.code, error.message, error); console.error(
+        console.error(
           "Send Money error:",
           error
         );
@@ -415,13 +402,13 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
         });
 
         confirmBtn.textContent =
-          "✓ Request Sent";
+          "✓ Transfer Complete";
 
         confirmBtn.style.background =
           "#16a34a";
 
         message.textContent =
-          "Transfer request created successfully.";
+          "Transfer completed successfully.";
 
         setTimeout(() => {
           window.location.href = "index.html";
@@ -429,7 +416,7 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
 
       } catch (error) {
 
-        console.error("FULL TRANSFER ERROR:", error.code, error.message, error); console.error(
+        console.error(
           "Transfer request error:",
           error
         );

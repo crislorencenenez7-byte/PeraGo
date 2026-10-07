@@ -55,19 +55,19 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
 
       <div class="auth-heading">
         <h2>Create your PIN</h2>
-        <p>Set a 4-digit PIN for your PeraGo demo wallet.</p>
+        <p>Set a 6-digit PIN for your PeraGo demo wallet.</p>
       </div>
 
       <div class="input-group">
-        <label for="pin">4-Digit PIN</label>
+        <label for="pin">6-Digit PIN</label>
         <input
           class="otp-input"
           type="password"
           id="pin"
-          maxlength="4"
+          maxlength="6"
           inputmode="numeric"
           autocomplete="off"
-          placeholder="••••"
+          placeholder="••••••"
         >
       </div>
 
@@ -77,10 +77,10 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
           class="otp-input"
           type="password"
           id="confirmPin"
-          maxlength="4"
+          maxlength="6"
           inputmode="numeric"
           autocomplete="off"
-          placeholder="••••"
+          placeholder="••••••"
         >
       </div>
 
@@ -111,8 +111,8 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
       const pinValue = pin.value.trim();
       const confirmValue = confirmPin.value.trim();
 
-      if (!/^\d{4}$/.test(pinValue)) {
-        message.textContent = "PIN must be exactly 4 digits.";
+      if (!/^\d{6}$/.test(pinValue)) {
+        message.textContent = "PIN must be exactly 6 digits.";
         return;
       }
 

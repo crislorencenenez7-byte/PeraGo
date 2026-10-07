@@ -12,10 +12,10 @@ export default async function handler(req, res) {
   try {
     const { phone, pin } = req.body || {};
 
-    if (!phone || !/^\d{4}$/.test(String(pin || ""))) {
+    if (!phone || !/^\d{6}$/.test(String(pin || ""))) {
       return res.status(400).json({
         success: false,
-        message: "Mobile number and 4-digit PIN are required."
+        message: "Mobile number and 6-digit PIN are required."
       });
     }
 

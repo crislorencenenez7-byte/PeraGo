@@ -6,7 +6,6 @@ import {
   getDoc,
   setDoc,
   collection,
-  addDoc,
   query,
   where,
   limit,
@@ -100,8 +99,21 @@ export async function getCurrentWallet() {
   return wallet;
 }
 
+export function normalizePhone(phoneNumber) {
+  let value = String(phoneNumber || "")
+    .trim()
+    .replace(/[^0-9+]/g, "");
+
+  if (value.startsWith("09") && value.length === 11) return "+63" + value.slice(1);
+  if (value.startsWith("9") && value.length === 10) return "+63" + value;
+  if (value.startsWith("639") && value.length === 12) return "+" + value;
+  if (value.startsWith("+639") && value.length === 13) return value;
+
+  return null;
+}
+
 export async function findWalletByPhone(phoneNumber) {
-  const normalizedPhone = String(phoneNumber || "").trim();
+  const normalizedPhone = normalizePhone(phoneNumber);
 
   if (!normalizedPhone) {
     return null;
