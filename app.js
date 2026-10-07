@@ -18,12 +18,25 @@ async function findUser(phone){
 async function ensureSessionUser(){if(!auth.currentUser)await signInAnonymously(auth);return auth.currentUser}
 
 function authScreen(mode="login"){
- root.innerHTML=`<main class="auth"><section class="authbox">
- <img class="logo" src="assets/perago-logo.svg"><h1 class="title">PeraGo</h1>
- <p class="muted" style="text-align:center">Your wallet, made simple.</p>
- <div id="authbox"></div></section></main>`;
+ root.innerHTML=`<main class="auth perago-auth">
+  <div class="auth-bg">
+   <div class="auth-brand">
+    <img class="logo" src="assets/perago-logo.svg">
+    <div class="auth-brand-name">PeraGo</div>
+    <div class="auth-tagline">Your wallet, made simple.</div>
+   </div>
+
+   <section class="auth-card">
+    <div id="authbox"></div>
+   </section>
+
+   <div class="auth-footer">PeraGo • Secure digital wallet</div>
+  </div>
+ </main>`;
+
  mode==="register"?registerPhoneStep():loginStep();
 }
+
 
 function loginStep(){
  const box=document.querySelector("#authbox");
@@ -375,55 +388,81 @@ async function dashboard(u){
  document.querySelector("#billsNav").onclick=()=>comingSoon("Bills");
 
  document.querySelector("#accountNav").onclick=()=>{
-  panel().innerHTML=`
-   <section class="card pg-panel">
-    <div class="pg-panel-head">
-     <h2>Profile</h2>
-     <button class="pg-close" id="closePanel">×</button>
-    </div>
+  root.innerHTML=`
+   <div class="pg-profile-page">
 
-    <div class="field">
-     <label>NAME</label>
-     <input value="${esc(d.name||"")}" readonly>
-    </div>
+    <header class="pg-profile-header">
+     <button class="pg-back" id="profileBack">‹</button>
 
-    <div class="field">
-     <label>NUMBER</label>
-     <input value="${esc(d.phone||"")}" readonly>
-    </div>
+     <div class="pg-profile-title">
+      <img src="assets/perago-logo.svg">
+      <span>Profile</span>
+     </div>
 
-    <div class="field">
-     <label>EMAIL</label>
-     <input value="${esc(d.email||"")}" readonly>
-    </div>
+     <div style="width:40px"></div>
+    </header>
 
-    <div class="field">
-     <label>VERIFIED</label>
-     <input value="${d.verified===true?"Yes":"No"}" readonly>
-    </div>
+    <section class="pg-profile-card">
 
-    <div class="field">
-     <label>BIRTHDAY</label>
-     <input value="${esc(d.birthday||"")}" readonly>
-    </div>
+     <div class="pg-profile-avatar">
+      ${esc((d.name||"P").charAt(0).toUpperCase())}
+     </div>
 
-    <div class="field">
-     <label>FILIPINO</label>
-     <input value="${esc(d.filipino||"")}" readonly>
-    </div>
+     <h2>${esc(d.name||"PeraGo User")}</h2>
+     <p>${esc(d.phone||"")}</p>
 
-    <button class="ghost" id="logout" style="margin-top:10px">Log out</button>
-   </section>`;
+     <div class="pg-profile-info">
 
-  document.querySelector("#closePanel").onclick=()=>{
-   panel().innerHTML="";
+      <div class="pg-info-row">
+       <span>Name</span>
+       <strong>${esc(d.name||"")}</strong>
+      </div>
+
+      <div class="pg-info-row">
+       <span>Number</span>
+       <strong>${esc(d.phone||"")}</strong>
+      </div>
+
+      <div class="pg-info-row">
+       <span>Email</span>
+       <strong>${esc(d.email||"")}</strong>
+      </div>
+
+      <div class="pg-info-row">
+       <span>Verified</span>
+       <strong>${d.verified===true?"Yes":"No"}</strong>
+      </div>
+
+      <div class="pg-info-row">
+       <span>Birthday</span>
+       <strong>${esc(d.birthday||"")}</strong>
+      </div>
+
+      <div class="pg-info-row">
+       <span>Filipino</span>
+       <strong>${esc(d.filipino||"")}</strong>
+      </div>
+
+     </div>
+
+     <button class="primary pg-profile-action" id="profileLogout">
+      Log out
+     </button>
+
+    </section>
+
+   </div>`;
+
+  document.querySelector("#profileBack").onclick=()=>{
+   dashboard(u);
   };
 
-  document.querySelector("#logout").onclick=()=>{
+  document.querySelector("#profileLogout").onclick=()=>{
    sessionStorage.clear();
    authScreen("login");
   };
  };
+
 
  document.querySelector("#sendBtn").onclick=()=>{
   panel().innerHTML=`
