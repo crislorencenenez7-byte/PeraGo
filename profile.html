@@ -3,90 +3,222 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1769ff">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icon-192.png" type="image/png">
-  <title>Profile — PeraGo</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Profile - PeraGo</title>
+  <link rel="stylesheet" href="auth.css">
+
+  <style>
+    body {
+      background: #f4f7fb;
+    }
+
+    .profile-icon {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      background: #eaf2ff;
+      color: #1677ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .profile-info {
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+
+    .profile-row {
+      padding: 12px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .profile-row:last-child {
+      border-bottom: none;
+    }
+
+    .profile-label {
+      display: block;
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .profile-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .danger-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #fee2e2;
+      color: #dc2626;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
 </head>
+
 <body>
-<div class="app-page">
-  <header class="app-header">
-    <div class="app-header-row">
-      <div class="app-brand">
-        <div class="app-brand-mark">P</div>
-        <div><div class="app-brand-name">PeraGo</div><div class="app-brand-sub">Your smart wallet</div></div>
+
+<style id="perago-premium-1750">
+:root{
+  --pg-bg:#f4f7fb;--pg-card:#ffffff;--pg-text:#101828;--pg-muted:#667085;
+  --pg-border:#e7ecf3;--pg-accent:#0b6bff;--pg-accent2:#13a8ff;
+  --pg-shadow:0 14px 40px rgba(16,24,40,.08);
+}
+body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
+.pg-brandbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;margin:0 0 18px;border-radius:20px;background:linear-gradient(135deg,#0b6bff,#13a8ff);color:#fff;box-shadow:0 12px 30px rgba(11,107,255,.20)}
+.pg-brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.2px}
+.pg-logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);font-weight:900;font-size:21px}
+.pg-brand small{display:block;font-weight:500;opacity:.82;font-size:11px;margin-top:1px}
+.pg-profile-dot{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#0b6bff;font-weight:800;text-decoration:none}
+.pg-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:9px;margin:16px 0 22px;border:1px solid var(--pg-border);border-radius:22px;background:rgba(255,255,255,.9);box-shadow:var(--pg-shadow)}
+.pg-tab{min-height:58px;border-radius:16px;text-decoration:none;color:var(--pg-muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:700;transition:.18s}
+.pg-tab:hover{background:#f1f6ff;color:#0b6bff}
+.pg-tab-icon{font-size:20px;line-height:1;font-weight:900}
+.pg-tab[href="__CURRENT__"]{background:#eaf2ff;color:#0b6bff}
+.pg-page-title{font-weight:900;letter-spacing:-.4px}
+.pg-section-card{background:var(--pg-card);border:1px solid var(--pg-border);border-radius:24px;box-shadow:var(--pg-shadow)}
+@media(max-width:520px){.pg-brandbar{padding:12px 14px}.pg-nav{gap:5px;padding:7px}.pg-tab{min-height:54px}.pg-tab-icon{font-size:18px}}
+</style>
+
+<div class="pg-brandbar">
+  <div class="pg-brand">
+    <div class="pg-logo">₱</div>
+    <div>PeraGo<small>Your smart wallet</small></div>
+  </div>
+  <a class="pg-profile-dot" href="profile.html" aria-label="Profile">P</a>
+</div>
+<nav class="pg-nav" aria-label="PeraGo navigation">
+  <a class="pg-tab" href="index.html" aria-label="Home"><span class="pg-tab-icon">⌂</span><span>Home</span></a><a class="pg-tab" href="send-money.html" aria-label="Send"><span class="pg-tab-icon">↗</span><span>Send</span></a><a class="pg-tab" href="qr.html" aria-label="QR"><span class="pg-tab-icon">▣</span><span>QR</span></a><a class="pg-tab" href="profile.html" aria-label="Profile"><span class="pg-tab-icon">◉</span><span>Profile</span></a>
+</nav>
+
+
+  <div class="auth-page">
+
+    <div class="auth-brand">
+      <div class="profile-icon">P</div>
+      <h1>PeraGo</h1>
+      <p>Your account</p>
+    </div>
+
+    <div class="auth-card">
+
+      <div class="auth-heading">
+        <h2>Profile</h2>
+        <p>Manage your PeraGo account.</p>
       </div>
-      <a class="app-profile" href="profile.html" aria-label="Profile">P</a>
-    </div>
-  </header>
 
-  <main class="page-content">
-    <div class="page-title-row">
-      <button class="back-btn" type="button" onclick="history.back()" aria-label="Go back">‹</button>
-      <div><h1 class="page-title">Profile</h1><p class="page-subtitle">Manage your account and security.</p></div>
-    </div>
-
-    <section class="app-card profile-hero">
-      <div class="profile-avatar">P</div>
-      <h1>PeraGo Wallet</h1>
-      <p>Your account is protected.</p>
-    </section>
-
-    <section class="app-card">
-      <div class="section-kicker" style="color:#8b99ad">ACCOUNT DETAILS</div>
       <div class="profile-info">
+
         <div class="profile-row">
           <span class="profile-label">Mobile Number</span>
-          <span class="profile-value" id="phoneNumber">Loading...</span>
+          <span class="profile-value" id="phoneNumber">
+            Loading...
+          </span>
         </div>
+
         <div class="profile-row">
           <span class="profile-label">Account Status</span>
-          <span class="profile-value">✓ Verified</span>
+          <span class="profile-value">Verified</span>
         </div>
+
       </div>
-      <a class="action-link" href="change-pin.html">🔐 Change PIN</a>
-      <button class="danger-btn full-btn" id="logoutBtn" type="button">Log out</button>
+
+      
+      <a
+        href="change-pin.html"
+        style="
+          display: block;
+          width: 100%;
+          box-sizing: border-box;
+          padding: 14px;
+          margin-bottom: 12px;
+          border-radius: 12px;
+          background: #eaf2ff;
+          color: #1677ff;
+          text-align: center;
+          text-decoration: none;
+          font-size: 16px;
+          font-weight: 600;
+        "
+      >
+        🔐 Change PIN
+      </a>
+
+      <button class="danger-btn" id="logoutBtn" type="button">
+        Logout
+      </button>
+
       <div id="profileMessage" class="auth-message"></div>
-    </section>
 
-    <div class="status-note" style="margin-top:13px">
-      <span>🛡️</span><div><strong>Demo wallet security</strong> PeraGo is a demo project. Never enter real financial credentials or money.</div>
     </div>
-  </main>
 
-  <nav class="bottom-nav" aria-label="Main navigation">
-    <button class="nav-item" type="button" onclick="window.location.href='index.html'"><span>⌂</span><small>Home</small></button>
-    <button class="nav-item" type="button" onclick="window.location.href='send-money.html'"><span>➤</span><small>Send</small></button>
-    <button class="nav-item qr-main" type="button" onclick="window.location.href='qr.html'"><span>▦</span><small>QR</small></button>
-    <button class="nav-item" type="button" onclick="window.location.href='index.html#transactions'"><span>◷</span><small>History</small></button>
-    <button class="nav-item active" type="button"><span>●</span><small>Profile</small></button>
-  </nav>
-</div>
+    <p class="footer-text">
+      PeraGo Demo Wallet
+    </p>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getAuth,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { getFirestore,doc,getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-import { firebaseConfig } from "./firebase-config.js";
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
-const phoneNumber=document.getElementById("phoneNumber"),logoutBtn=document.getElementById("logoutBtn"),message=document.getElementById("profileMessage");
-onAuthStateChanged(auth,user=>{
-  if(!user){window.location.replace("register.html");return;}
-  try{
-    const snap=await getDoc(doc(db,"users",user.uid));
-    const data=snap.exists()?snap.data():{};
-    phoneNumber.textContent=data.phone||user.phoneNumber||"Mobile number unavailable";
-  }catch(error){
-    console.error("Profile load error:",error);
-    phoneNumber.textContent=user.phoneNumber||"Mobile number unavailable";
-  }
-});
-logoutBtn.addEventListener("click",async()=>{
-  logoutBtn.disabled=true;message.textContent="Logging out...";
-  try{await signOut(auth);sessionStorage.removeItem("perago_unlocked");window.location.replace("register.html");}
-  catch(error){console.error(error);message.textContent="Logout failed.";logoutBtn.disabled=false;}
-});
-</script>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    import { firebaseConfig } from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const phoneNumber = document.getElementById("phoneNumber");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const message = document.getElementById("profileMessage");
+
+    onAuthStateChanged(auth, (user) => {
+
+      if (!user) {
+        window.location.replace("register.html");
+        return;
+      }
+
+      phoneNumber.textContent =
+        user.phoneNumber || "Mobile number unavailable";
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+
+      logoutBtn.disabled = true;
+      message.textContent = "Logging out...";
+
+      try {
+        await signOut(auth);
+
+        sessionStorage.removeItem("perago_unlocked");
+
+        window.location.replace("register.html");
+
+      } catch (error) {
+
+        console.error(error);
+
+        message.textContent = "Logout failed.";
+        logoutBtn.disabled = false;
+      }
+    });
+  </script>
+
 </body>
 </html>
