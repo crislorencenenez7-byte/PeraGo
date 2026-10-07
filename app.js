@@ -217,14 +217,160 @@ async function pinLogin(user){
 }
 
 async function dashboard(u){
- const s=await getDoc(doc(db,"users",u.uid));const d=s.data()||{};
- root.innerHTML=`<div class="shell"><div class="top"><div class="brand"><img src="assets/perago-logo.svg">PeraGo</div><button class="ghost" style="width:auto;padding:8px 12px" id="logout">Log out</button></div>
- <section class="card hero"><div class="eyebrow">Available balance</div><div class="balance">${peso(d.balance)}</div></section>
- <section class="card"><h2>Hello, ${esc(d.name||"PeraGo User")}!</h2><p class="muted">${esc(d.phone||"")}</p></section>
- </div>`;
- document.querySelector("#logout").onclick=()=>{sessionStorage.clear();authScreen("login")};
-}
+ const s=await getDoc(doc(db,"users",u.uid));
+ const d=s.data()||{};
 
+ root.innerHTML=`<div class="shell">
+  <div class="top">
+   <div class="brand"><img src="assets/perago-logo.svg">PeraGo</div>
+   <button class="ghost" style="width:auto;padding:8px 12px" id="logout">Log out</button>
+  </div>
+
+  <section class="card hero">
+   <div class="eyebrow">Available balance</div>
+   <div class="balance">${peso(d.balance)}</div>
+  </section>
+
+  <section class="card">
+   <h2>Hello, ${esc(d.name||"PeraGo User")}!</h2>
+   <p class="muted">${esc(d.phone||"")}</p>
+
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px">
+    <button class="primary" id="sendBtn">Send</button>
+    <button class="ghost" id="profileBtn">Profile</button>
+   </div>
+  </section>
+
+  <section id="dashboardPanel"></section>
+ </div>`;
+
+ document.querySelector("#logout").onclick=()=>{
+  sessionStorage.clear();
+  authScreen("login");
+ };
+
+ document.querySelector("#profileBtn").onclick=()=>{
+  document.querySelector("#dashboardPanel").innerHTML=`
+   <section class="card">
+    <h2>Profile</h2>
+
+    <div class="field">
+     <label>NAME</label>
+     <input value="${esc(d.name||"")}" readonly>
+    </div>
+
+    <div class="field">
+     <label>NUMBER</label>
+     <input value="${esc(d.phone||"")}" readonly>
+    </div>
+
+    <div class="field">
+     <label>EMAIL</label>
+     <input value="${esc(d.email||"")}" readonly>
+    </div>
+
+    <div class="field">
+     <label>VERIFIED</label>
+     <input value="${d.verified===true?"Yes":"No"}" readonly>
+    </div>
+
+    <div class="field">
+     <label>BIRTHDAY</label>
+     <input value="${esc(d.birthday||"")}" readonly>
+    </div>
+
+    <div class="field">
+     <label>FILIPINO</label>
+     <input value="${esc(d.filipino||"")}" readonly>
+    </div>
+
+    <button class="ghost" id="closeProfile">Close</button>
+   </section>`;
+
+  document.querySelector("#closeProfile").onclick=()=>{
+   document.querySelector("#dashboardPanel").innerHTML="";
+  };
+ };
+
+ document.querySelector("#sendBtn").onclick=()=>{
+  document.querySelector("#dashboardPanel").innerHTML=`
+   <section class="card">
+    <h2>Send Money</h2>
+    <p class="muted">Enter the recipient and amount.</p>
+
+    <div class="field">
+     <label>RECIPIENT MOBILE NUMBER</label>
+     <input id="sendPhone" inputmode="numeric" maxlength="11" placeholder="09XXXXXXXXX">
+    </div>
+
+    <div class="field">
+     <label>AMOUNT</label>
+     <input id="sendAmount" inputmode="decimal" type="number" min="1" step="0.01" placeholder="₱0.00">
+    </div>
+
+    <button class="primary" id="continueSend">Continue</button>
+   </section>`;
+
+  document.querySelector("#continueSend").onclick=()=>{
+   const phone=document.querySelector("#sendPhone").value.trim();
+   const amount=Number(document.querySelector("#sendAmount").value);
+
+   if(!validPhone(phone))
+    return toast("Enter a valid 11-digit PH number.");
+
+   if(!Number.isFinite(amount)||amount<=0)
+    return toast("Enter a valid amount.");
+
+   document.querySelector("#dashboardPanel").innerHTML=`
+    <section class="card">
+     <h2>Confirm Transfer</h2>
+     <p class="muted">Please check the details before confirming.</p>
+
+     <div class="field">
+      <label>RECIPIENT</label>
+      <input value="${esc(phone)}" readonly>
+     </div>
+
+     <div class="field">
+      <label>AMOUNT</label>
+      <input value="${peso(amount)}" readonly>
+     </div>
+
+     <button class="primary" id="confirmSend">Confirm Send</button>
+     <button class="ghost" id="cancelSend" style="margin-top:10px">Cancel</button>
+    </section>`;
+
+   document.querySelector("#cancelSend").onclick=()=>{
+    document.querySelector("#dashboardPanel").innerHTML="";
+   };
+
+   document.querySelector("#confirmSend").onclick=()=>{
+    document.querySelector("#dashboardPanel").innerHTML=`
+     <section class="card" style="text-align:center">
+      <div style="font-size:48px;margin-bottom:10px">✓</div>
+      <h2>Transfer Successful</h2>
+      <p class="muted">Prototype transfer completed.</p>
+
+      <div class="field" style="text-align:left">
+       <label>RECIPIENT</label>
+       <input value="${esc(phone)}" readonly>
+      </div>
+
+      <div class="field" style="text-align:left">
+       <label>AMOUNT</label>
+       <input value="${peso(amount)}" readonly>
+      </div>
+
+      <button class="primary" id="doneSend">Done</button>
+     </section>`;
+
+    document.querySelector("#doneSend").onclick=()=>{
+     document.querySelector("#dashboardPanel").innerHTML="";
+    };
+   };
+  };
+ };
+}
 onAuthStateChanged(auth,()=>{if(!sessionStorage.getItem("perago_logged"))authScreen("login")});
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
