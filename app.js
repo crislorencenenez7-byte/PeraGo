@@ -129,4 +129,31 @@ async function dashboard(u){
 }
 
 onAuthStateChanged(auth,()=>{if(!sessionStorage.getItem("perago_logged"))authScreen("login")});
-if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", async () => {
+    try {
+      const registration = await navigator.serviceWorker.register("./sw.js", {
+        updateViaCache: "none"
+      });
+
+      await registration.update();
+
+      registration.addEventListener("updatefound", () => {
+        const worker = registration.installing;
+        if (!worker) return;
+
+        worker.addEventListener("statechange", () => {
+          if (worker.state === "installed" && navigator.serviceWorker.controller) {
+            worker.postMessage({ type: "SKIP_WAITING" });
+          }
+        });
+      });
+    } catch (error) {
+      console.error("Service worker update failed:", error);
+    }
+  });
+
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    window.location.reload();
+  });
+}
