@@ -9,7 +9,7 @@ function hashPin(pin) {
 }
 
 export async function verifyPin(phone, pin) {
-  if (!/^\d{6}$/.test(pin)) {
+  if (!/^\d{4}$/.test(pin)) {
     return null;
   }
 

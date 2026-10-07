@@ -18,9 +18,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const registerPath = window.location.pathname.replace(/[^/]*$/, "register.html");
 const actionCodeSettings = {
-  url: window.location.origin + registerPath,
+  url: window.location.origin + "/register.html",
   handleCodeInApp: true
 };
 
@@ -101,57 +100,6 @@ window.completeEmailVerification = async function () {
       success: false,
       message: error.message
     };
-  }
-};
-
-
-window.sendPinResetLink = async function (email) {
-  try {
-    const value = String(email || "").trim();
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      return { success: false, message: "Enter a valid email address." };
-    }
-
-    const resetPath = window.location.pathname.replace(/[^/]*$/, "reset-pin.html");
-    const resetSettings = {
-      url: window.location.origin + resetPath + "?flow=pin-reset",
-      handleCodeInApp: true
-    };
-
-    await sendSignInLinkToEmail(auth, value, resetSettings);
-    localStorage.setItem("perago_pin_reset_email", value);
-
-    return { success: true, message: "PIN reset link sent." };
-  } catch (error) {
-    console.error("PIN reset link error:", error);
-    return { success: false, message: error.message };
-  }
-};
-
-window.completePinResetLink = async function () {
-  try {
-    if (new URL(window.location.href).searchParams.get("flow") !== "pin-reset") {
-      return { success: true, alreadyComplete: true, user: auth.currentUser };
-    }
-
-    if (!isSignInWithEmailLink(auth, window.location.href)) {
-      return { success: false, message: "This PIN reset link is invalid or expired." };
-    }
-
-    const email = localStorage.getItem("perago_pin_reset_email");
-
-    if (!email) {
-      return { success: false, message: "Enter the email address used for your PeraGo account again." };
-    }
-
-    const result = await signInWithEmailLink(auth, email, window.location.href);
-    localStorage.removeItem("perago_pin_reset_email");
-
-    return { success: true, user: result.user };
-  } catch (error) {
-    console.error("PIN reset completion error:", error);
-    return { success: false, message: error.message };
   }
 };
 
