@@ -220,39 +220,167 @@ async function dashboard(u){
  const s=await getDoc(doc(db,"users",u.uid));
  const d=s.data()||{};
 
- root.innerHTML=`<div class="shell">
-  <div class="top">
-   <div class="brand"><img src="assets/perago-logo.svg">PeraGo</div>
-   <button class="ghost" style="width:auto;padding:8px 12px" id="logout">Log out</button>
+ root.innerHTML=`
+ <div class="shell perago-dashboard">
+
+  <div class="pg-header">
+   <div class="pg-topbar">
+    <div class="pg-brand">
+     <img src="assets/perago-logo.svg">
+     <span>PeraGo</span>
+    </div>
+
+    <div class="pg-header-actions">
+     <button class="pg-icon" id="notifBtn" aria-label="Notifications">♧</button>
+     <button class="pg-icon" id="menuBtn" aria-label="Menu">☰</button>
+    </div>
+   </div>
+
+   <section class="pg-balance-card">
+    <div class="pg-account-row">
+     <div>
+      <div class="pg-small">Hello,</div>
+      <div class="pg-name">${esc(d.name||"PeraGo User")}</div>
+      <div class="pg-account">PeraGo Account</div>
+     </div>
+     <div class="pg-qr">▦</div>
+    </div>
+
+    <div class="pg-balance-row">
+     <div>
+      <div class="pg-balance">${peso(d.balance)}</div>
+      <div class="pg-available">Available Balance</div>
+     </div>
+     <button class="pg-cash-btn" id="cashInBtn">＋ Cash In</button>
+    </div>
+   </section>
   </div>
 
-  <section class="card hero">
-   <div class="eyebrow">Available balance</div>
-   <div class="balance">${peso(d.balance)}</div>
+  <section class="pg-actions-card">
+
+   <button class="pg-action" id="sendBtn">
+    <span class="pg-action-icon">➤</span>
+    <span>Send Money</span>
+   </button>
+
+   <button class="pg-action" id="receiveBtn">
+    <span class="pg-action-icon">⇩</span>
+    <span>Receive Money</span>
+   </button>
+
+   <button class="pg-action" id="cashInAction">
+    <span class="pg-action-icon">▣</span>
+    <span>Cash In</span>
+   </button>
+
+   <button class="pg-action" id="cashOutBtn">
+    <span class="pg-action-icon">▤</span>
+    <span>Cash Out</span>
+   </button>
+
+   <button class="pg-action" id="billsBtn">
+    <span class="pg-action-icon">☷</span>
+    <span>Pay Bills</span>
+   </button>
+
+   <button class="pg-action" id="loadBtn">
+    <span class="pg-action-icon">▯</span>
+    <span>Buy Load</span>
+   </button>
+
+   <button class="pg-action" id="emoneyBtn">
+    <span class="pg-action-icon">▦</span>
+    <span>eMoney</span>
+   </button>
+
+   <button class="pg-action" id="moreBtn">
+    <span class="pg-action-icon">⠿</span>
+    <span>More</span>
+   </button>
+
   </section>
 
-  <section class="card">
-   <h2>Hello, ${esc(d.name||"PeraGo User")}!</h2>
-   <p class="muted">${esc(d.phone||"")}</p>
+  <section class="pg-promo">
+   <div>
+    <div class="pg-promo-small">Simple. Secure. Go.</div>
+    <div class="pg-promo-title">PeraGo</div>
+    <div class="pg-promo-text">Your money, your way.</div>
+   </div>
+   <div class="pg-promo-mark">₱</div>
+  </section>
 
-   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px">
-    <button class="primary" id="sendBtn">Send</button>
-    <button class="ghost" id="profileBtn">Profile</button>
+  <div class="pg-dots">
+   <i class="active"></i><i></i><i></i>
+  </div>
+
+  <section class="pg-recent">
+   <div class="pg-section-title">
+    <strong>Recent Transactions</strong>
+    <button id="viewTransactions">View All ›</button>
+   </div>
+
+   <div class="pg-empty-transaction">
+    <div class="pg-transaction-icon">₱</div>
+    <div>
+     <strong>No recent transactions</strong>
+     <div>Transactions will appear here.</div>
+    </div>
    </div>
   </section>
 
-  <section id="dashboardPanel"></section>
+  <div id="dashboardPanel"></div>
+
+  <nav class="pg-bottom-nav">
+   <button class="pg-nav active" id="homeNav">
+    <span>⌂</span>
+    <small>Home</small>
+   </button>
+
+   <button class="pg-nav" id="transactionsNav">
+    <span>▦</span>
+    <small>Transactions</small>
+   </button>
+
+   <button class="pg-nav" id="billsNav">
+    <span>♢</span>
+    <small>Bills</small>
+   </button>
+
+   <button class="pg-nav" id="accountNav">
+    <span>♙</span>
+    <small>Account</small>
+   </button>
+  </nav>
+
  </div>`;
 
- document.querySelector("#logout").onclick=()=>{
-  sessionStorage.clear();
-  authScreen("login");
+ const panel=()=>document.querySelector("#dashboardPanel");
+
+ const comingSoon=(name)=>{
+  toast(name+" is coming soon.");
  };
 
- document.querySelector("#profileBtn").onclick=()=>{
-  document.querySelector("#dashboardPanel").innerHTML=`
-   <section class="card">
-    <h2>Profile</h2>
+ document.querySelector("#notifBtn").onclick=()=>comingSoon("Notifications");
+ document.querySelector("#menuBtn").onclick=()=>comingSoon("Menu");
+ document.querySelector("#cashInBtn").onclick=()=>comingSoon("Cash In");
+ document.querySelector("#cashInAction").onclick=()=>comingSoon("Cash In");
+ document.querySelector("#receiveBtn").onclick=()=>comingSoon("Receive Money");
+ document.querySelector("#cashOutBtn").onclick=()=>comingSoon("Cash Out");
+ document.querySelector("#billsBtn").onclick=()=>comingSoon("Pay Bills");
+ document.querySelector("#loadBtn").onclick=()=>comingSoon("Buy Load");
+ document.querySelector("#emoneyBtn").onclick=()=>comingSoon("eMoney");
+ document.querySelector("#moreBtn").onclick=()=>comingSoon("More");
+ document.querySelector("#viewTransactions").onclick=()=>comingSoon("Transactions");
+ document.querySelector("#transactionsNav").onclick=()=>comingSoon("Transactions");
+ document.querySelector("#billsNav").onclick=()=>comingSoon("Bills");
+
+ document.querySelector("#accountNav").onclick=()=>{
+  panel().innerHTML=`
+   <section class="card pg-panel">
+    <div class="pg-panel-head">
+     <h2>Profile</h2>
+     <button class="pg-close" id="closePanel">×</button>
+    </div>
 
     <div class="field">
      <label>NAME</label>
@@ -284,19 +412,28 @@ async function dashboard(u){
      <input value="${esc(d.filipino||"")}" readonly>
     </div>
 
-    <button class="ghost" id="closeProfile">Close</button>
+    <button class="ghost" id="logout" style="margin-top:10px">Log out</button>
    </section>`;
 
-  document.querySelector("#closeProfile").onclick=()=>{
-   document.querySelector("#dashboardPanel").innerHTML="";
+  document.querySelector("#closePanel").onclick=()=>{
+   panel().innerHTML="";
+  };
+
+  document.querySelector("#logout").onclick=()=>{
+   sessionStorage.clear();
+   authScreen("login");
   };
  };
 
  document.querySelector("#sendBtn").onclick=()=>{
-  document.querySelector("#dashboardPanel").innerHTML=`
-   <section class="card">
-    <h2>Send Money</h2>
-    <p class="muted">Enter the recipient and amount.</p>
+  panel().innerHTML=`
+   <section class="card pg-panel">
+    <div class="pg-panel-head">
+     <h2>Send Money</h2>
+     <button class="pg-close" id="closeSend">×</button>
+    </div>
+
+    <p class="muted">Send money to another PeraGo mobile number.</p>
 
     <div class="field">
      <label>RECIPIENT MOBILE NUMBER</label>
@@ -311,6 +448,8 @@ async function dashboard(u){
     <button class="primary" id="continueSend">Continue</button>
    </section>`;
 
+  document.querySelector("#closeSend").onclick=()=>panel().innerHTML="";
+
   document.querySelector("#continueSend").onclick=()=>{
    const phone=document.querySelector("#sendPhone").value.trim();
    const amount=Number(document.querySelector("#sendAmount").value);
@@ -321,9 +460,13 @@ async function dashboard(u){
    if(!Number.isFinite(amount)||amount<=0)
     return toast("Enter a valid amount.");
 
-   document.querySelector("#dashboardPanel").innerHTML=`
-    <section class="card">
-     <h2>Confirm Transfer</h2>
+   panel().innerHTML=`
+    <section class="card pg-panel">
+     <div class="pg-panel-head">
+      <h2>Confirm Transfer</h2>
+      <button class="pg-close" id="cancelSend">×</button>
+     </div>
+
      <p class="muted">Please check the details before confirming.</p>
 
      <div class="field">
@@ -337,26 +480,23 @@ async function dashboard(u){
      </div>
 
      <button class="primary" id="confirmSend">Confirm Send</button>
-     <button class="ghost" id="cancelSend" style="margin-top:10px">Cancel</button>
     </section>`;
 
-   document.querySelector("#cancelSend").onclick=()=>{
-    document.querySelector("#dashboardPanel").innerHTML="";
-   };
+   document.querySelector("#cancelSend").onclick=()=>panel().innerHTML="";
 
    document.querySelector("#confirmSend").onclick=()=>{
-    document.querySelector("#dashboardPanel").innerHTML=`
-     <section class="card" style="text-align:center">
-      <div style="font-size:48px;margin-bottom:10px">✓</div>
+    panel().innerHTML=`
+     <section class="card pg-panel pg-success">
+      <div class="pg-success-icon">✓</div>
       <h2>Transfer Successful</h2>
       <p class="muted">Prototype transfer completed.</p>
 
-      <div class="field" style="text-align:left">
+      <div class="field">
        <label>RECIPIENT</label>
        <input value="${esc(phone)}" readonly>
       </div>
 
-      <div class="field" style="text-align:left">
+      <div class="field">
        <label>AMOUNT</label>
        <input value="${peso(amount)}" readonly>
       </div>
@@ -364,14 +504,15 @@ async function dashboard(u){
       <button class="primary" id="doneSend">Done</button>
      </section>`;
 
-    document.querySelector("#doneSend").onclick=()=>{
-     document.querySelector("#dashboardPanel").innerHTML="";
-    };
+    document.querySelector("#doneSend").onclick=()=>panel().innerHTML="";
    };
   };
  };
-}
-onAuthStateChanged(auth,()=>{if(!sessionStorage.getItem("perago_logged"))authScreen("login")});
+
+ document.querySelector("#homeNav").onclick=()=>{
+  panel().innerHTML="";
+ };
+}onAuthStateChanged(auth,()=>{if(!sessionStorage.getItem("perago_logged"))authScreen("login")});
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
     try {
