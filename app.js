@@ -1,21 +1,132 @@
 import{initializeApp}from"https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import{getAuth,onAuthStateChanged,sendSignInLinkToEmail,isSignInWithEmailLink,signInWithEmailLink,signOut}from"https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import{getFirestore,doc,getDoc,setDoc,collection,query,where,limit,getDocs,runTransaction,serverTimestamp,orderBy,onSnapshot}from"https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+import{getAuth,onAuthStateChanged,signInAnonymously,signOut}from"https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,setDoc,query,collection,where,limit,getDocs,serverTimestamp}from"https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 import{firebaseConfig}from"./firebase-config.js";
+
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),root=document.querySelector("#app");
 const peso=n=>Number(n||0).toLocaleString("en-PH",{style:"currency",currency:"PHP"});
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-const toast=m=>{const x=document.querySelector("#toast");x.textContent=m;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),2200)};
-const date=t=>{const d=t?.toDate?t.toDate():new Date(t||Date.now());return d.toLocaleString("en-PH",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})};
-async function ensureWallet(u){const r=doc(db,"users",u.uid),s=await getDoc(r);if(!s.exists())await setDoc(r,{uid:u.uid,name:u.email?.split("@")[0]||"PeraGo User",phone:"",email:u.email||"",balance:1000,createdAt:serverTimestamp()});else if(typeof s.data().balance!=="number")await setDoc(r,{balance:1000},{merge:true})}
-function authUI(){root.innerHTML=`<main class="auth"><section class="authbox"><img class="logo" src="assets/perago-logo.svg"><h1 class="title">PeraGo</h1><p class="muted" style="text-align:center">Simple. Fast. Your money, your way.</p><div class="card"><div class="field"><label>EMAIL</label><input id="email" type="email" placeholder="you@example.com"></div><button class="primary" id="login">Continue with email</button><p class="muted" style="font-size:12px;text-align:center">A secure sign-in link will be sent to your email.</p></div></section></main>`;document.querySelector("#login").onclick=async()=>{const email=document.querySelector("#email").value.trim();if(!email)return toast("Enter your email.");try{await sendSignInLinkToEmail(auth,email,{url:location.href,handleCodeInApp:true});localStorage.setItem("perago_email",email);toast("Sign-in link sent.");}catch(e){toast(e.message)}}}
-async function sendMoney(u,phone,amount){const v=Number(amount);if(!/^09\d{9}$/.test(phone))throw Error("Use a valid PH mobile number.");if(!Number.isFinite(v)||v<=0)throw Error("Enter a valid amount.");const q=query(collection(db,"users"),where("phone","==",phone),limit(1)),found=await getDocs(q);if(found.empty)throw Error("No PeraGo account found.");const rec=found.docs[0];if(rec.id===u.uid)throw Error("You cannot send money to yourself.");const sr=doc(db,"users",u.uid),rr=doc(db,"users",rec.id);await runTransaction(db,async tx=>{const ss=await tx.get(sr),rs=await tx.get(rr),sb=Number(ss.data()?.balance||0),rb=Number(rs.data()?.balance||0);if(v>sb)throw Error("Insufficient balance.");const tr=doc(collection(db,"transactions"));tx.update(sr,{balance:sb-v});tx.update(rr,{balance:rb+v});tx.set(tr,{type:"send",senderUid:u.uid,recipientUid:rec.id,recipientPhone:phone,amount:v,status:"completed",createdAt:serverTimestamp()})})}
-function nav(u,screen="home"){const main=document.querySelector("#content");if(screen==="home")home(u);if(screen==="send")sendUI(u);if(screen==="history")historyUI(u);if(screen==="profile")profileUI(u)}
-function layout(u,content){root.innerHTML=`<div class="shell"><div class="top"><div class="brand"><img src="assets/perago-logo.svg">PeraGo</div><button class="ghost" style="width:auto;padding:8px 12px" id="logout">Log out</button></div><div id="content">${content}</div></div><nav class="nav"><button data-n="home">⌂<br>Home</button><button data-n="send">↗<br>Send</button><button data-n="history">☷<br>History</button><button data-n="profile">◎<br>Profile</button></nav>`;document.querySelector("#logout").onclick=()=>signOut(auth);document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>nav(u,b.dataset.n))}
-function home(u){getDoc(doc(db,"users",u.uid)).then(s=>{const d=s.data()||{};layout(u,`<section class="card hero"><div class="eyebrow">Available balance</div><div class="balance">${peso(d.balance)}</div><button class="ghost" style="background:#080808;color:#fff;border:0" id="add">＋ Add demo funds</button></section><div class="grid"><button class="action" id="sendA"><b>↗</b><span>Send</span></button><button class="action" id="histA"><b>☷</b><span>History</span></button><button class="action" id="qrA"><b>▣</b><span>QR</span></button><button class="action" id="profA"><b>◎</b><span>Profile</span></button></div><section class="card"><h2>Welcome back</h2><p class="muted">PeraGo is ready for your wallet journey.</p></section>`);document.querySelector("#add").onclick=async()=>{await setDoc(doc(db,"users",u.uid),{balance:Number(d.balance||0)+500},{merge:true});toast("₱500 demo funds added.");home(u)};document.querySelector("#sendA").onclick=()=>sendUI(u);document.querySelector("#histA").onclick=()=>historyUI(u);document.querySelector("#profA").onclick=()=>profileUI(u);document.querySelector("#qrA").onclick=()=>toast("QR feature coming next.")})}
-function sendUI(u){layout(u,`<section class="card"><h2>Send money</h2><p class="muted">Send a demo wallet transfer to another PeraGo account.</p><div class="field"><label>RECIPIENT MOBILE</label><input id="phone" inputmode="numeric" maxlength="11" placeholder="09XXXXXXXXX"></div><div class="field"><label>AMOUNT</label><input id="amount" type="number" min="1" placeholder="0.00"></div><button class="primary" id="send">Send money</button></section>`);document.querySelector("#send").onclick=async()=>{try{await sendMoney(u,document.querySelector("#phone").value.trim(),document.querySelector("#amount").value);toast("Transfer completed.");home(u)}catch(e){toast(e.message)}}}
-function historyUI(u){layout(u,`<section class="card"><h2>Transaction history</h2><div id="txs"><p class="muted">Loading…</p></div></section>`);const q=query(collection(db,"transactions"),where("senderUid","==",u.uid),orderBy("createdAt","desc"),limit(20));onSnapshot(q,s=>{const x=document.querySelector("#txs");if(!x)return;x.innerHTML=s.empty?'<p class="muted">No transactions yet.</p>':s.docs.map(a=>{const d=a.data();return`<div class="tx"><div>Sent money<small>${esc(d.recipientPhone||"PeraGo user")} · ${date(d.createdAt)}</small></div><div class="minus">-${peso(d.amount)}</div></div>`}).join("")},()=>{})}
-function profileUI(u){getDoc(doc(db,"users",u.uid)).then(s=>{const d=s.data()||{};layout(u,`<section class="card"><h2>Profile</h2><p class="muted">${esc(d.email||u.email)}</p><div class="field"><label>NAME</label><input id="name" value="${esc(d.name||"")}"></div><div class="field"><label>MOBILE</label><input id="phone" inputmode="numeric" value="${esc(d.phone||"")}" placeholder="09XXXXXXXXX"></div><button class="primary" id="save">Save profile</button></section>`);document.querySelector("#save").onclick=async()=>{const name=document.querySelector("#name").value.trim(),phone=document.querySelector("#phone").value.trim();if(phone&&!/^09\d{9}$/.test(phone))return toast("Invalid PH mobile number.");await setDoc(doc(db,"users",u.uid),{name,phone},{merge:true});toast("Profile saved.")}})}
-if(isSignInWithEmailLink(auth,location.href)){const email=localStorage.getItem("perago_email")||prompt("Confirm your email");if(email)signInWithEmailLink(auth,email,location.href).then(()=>{localStorage.removeItem("perago_email");history.replaceState({},document.title,location.pathname)}).catch(e=>toast(e.message))}
-onAuthStateChanged(auth,async u=>{if(!u)return authUI();await ensureWallet(u);home(u)});
+const toast=m=>{const x=document.querySelector("#toast");x.textContent=m;x.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>x.classList.remove("show"),2200)};
+const validPhone=p=>/^09\d{9}$/.test(p);
+const validPin=p=>/^\d{4}$/.test(p);
+const makeOtp=()=>String(Math.floor(100000+Math.random()*900000));
+
+async function findUser(phone){
+ const q=query(collection(db,"users"),where("phone","==",phone),limit(1));
+ const s=await getDocs(q); return s.empty?null:{id:s.docs[0].id,data:s.docs[0].data()};
+}
+async function ensureSessionUser(){if(!auth.currentUser)await signInAnonymously(auth);return auth.currentUser}
+
+function authScreen(mode="login"){
+ root.innerHTML=`<main class="auth"><section class="authbox">
+ <img class="logo" src="assets/perago-logo.svg"><h1 class="title">PeraGo</h1>
+ <p class="muted" style="text-align:center">Your wallet, made simple.</p>
+ <div id="authbox"></div></section></main>`;
+ mode==="register"?registerPhoneStep():loginStep();
+}
+
+function loginStep(){
+ const box=document.querySelector("#authbox");
+ box.innerHTML=`<div class="card"><h2>Login</h2><p class="muted">Enter your PeraGo mobile number.</p>
+ <div class="field"><label>MOBILE NUMBER</label><input id="loginPhone" inputmode="numeric" maxlength="11" placeholder="09XXXXXXXXX"></div>
+ <button class="primary" id="continue">Continue</button>
+ <button class="ghost" id="register" style="margin-top:10px">Create new account</button></div>`;
+ document.querySelector("#continue").onclick=async()=>{
+  const phone=document.querySelector("#loginPhone").value.trim();
+  if(!validPhone(phone))return toast("Enter a valid 11-digit PH number.");
+  const u=await findUser(phone);if(!u)return toast("Number is not registered.");
+  pinLogin(u);
+ };
+ document.querySelector("#register").onclick=()=>registerPhoneStep();
+}
+
+function registerPhoneStep(){
+ const box=document.querySelector("#authbox");
+ box.innerHTML=`<div class="steps"><i class="step on"></i><i class="step"></i><i class="step"></i></div>
+ <div class="card"><h2>Create account</h2><p class="muted">Start with your mobile number.</p>
+ <div class="field"><label>MOBILE NUMBER</label><input id="regPhone" inputmode="numeric" maxlength="11" placeholder="09XXXXXXXXX"></div>
+ <button class="primary" id="otpBtn">Generate OTP</button>
+ <button class="ghost" id="back" style="margin-top:10px">Back to login</button></div>`;
+ document.querySelector("#otpBtn").onclick=async()=>{
+  const phone=document.querySelector("#regPhone").value.trim();
+  if(!validPhone(phone))return toast("Enter a valid 11-digit PH number.");
+  if(await findUser(phone))return toast("Number is already registered.");
+  const otp=makeOtp();sessionStorage.setItem("perago_demo_otp",otp);sessionStorage.setItem("perago_reg_phone",phone);
+  otpStep(phone,otp);
+ };
+ document.querySelector("#back").onclick=()=>authScreen("login");
+}
+
+function otpStep(phone,otp){
+ const box=document.querySelector("#authbox");
+ box.innerHTML=`<div class="steps"><i class="step on"></i><i class="step on"></i><i class="step"></i></div>
+ <div class="card"><h2>Verify number</h2><p class="muted">Enter the OTP shown below.</p>
+ <div class="field"><label>OTP</label><input id="otp" inputmode="numeric" maxlength="6" placeholder="6-digit OTP"></div>
+ <div class="otp-box">DEMO OTP — for this prototype only<div class="otp-value">${otp}</div></div>
+ <button class="primary" id="verify">Verify OTP</button></div>`;
+ document.querySelector("#verify").onclick=()=>{
+  if(document.querySelector("#otp").value.trim()!==otp)return toast("Incorrect OTP.");
+  sessionStorage.setItem("perago_verified","1");registerDetails(phone);
+ };
+}
+
+function registerDetails(phone){
+ const box=document.querySelector("#authbox");
+ box.innerHTML=`<div class="steps"><i class="step on"></i><i class="step on"></i><i class="step on"></i></div>
+ <div class="card"><h2>Your details</h2><p class="muted">OTP verified. Complete your registration.</p>
+ <div class="field"><label>NAME</label><input id="name" placeholder="Your name"></div>
+ <div class="field"><label>EMAIL</label><input id="email" type="email" placeholder="you@example.com"></div>
+ <div class="field"><label>MOBILE NUMBER</label><input value="${phone}" disabled></div>
+ <button class="primary" id="details">Continue to PIN</button></div>`;
+ document.querySelector("#details").onclick=()=>{
+  const name=document.querySelector("#name").value.trim(),email=document.querySelector("#email").value.trim();
+  if(name.length<2)return toast("Enter your name.");if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast("Enter a valid email.");
+  sessionStorage.setItem("perago_name",name);sessionStorage.setItem("perago_email",email);pinSetup(phone);
+ };
+}
+
+function pinSetup(phone){
+ const box=document.querySelector("#authbox");
+ box.innerHTML=`<div class="card"><h2>Create your 4-digit PIN</h2><p class="muted">Your mobile number is shown above your PIN.</p>
+ <div style="text-align:center;font-size:20px;font-weight:900;color:#ffd21a;margin:18px 0">${phone}</div>
+ <div class="field"><label>4-DIGIT PIN</label><input id="pin1" inputmode="numeric" maxlength="4" type="password" placeholder="••••"></div>
+ <div class="field"><label>CONFIRM PIN</label><input id="pin2" inputmode="numeric" maxlength="4" type="password" placeholder="••••"></div>
+ <button class="primary" id="finish">Create PIN & Register</button></div>`;
+ document.querySelector("#finish").onclick=async()=>{
+  const p1=document.querySelector("#pin1").value,p2=document.querySelector("#pin2").value;
+  if(!validPin(p1))return toast("PIN must be exactly 4 digits.");if(p1!==p2)return toast("PINs do not match.");
+  try{
+   const u=await ensureSessionUser();
+   await setDoc(doc(db,"users",u.uid),{uid:u.uid,name:sessionStorage.getItem("perago_name"),email:sessionStorage.getItem("perago_email"),phone,balance:1000,pin:p1,createdAt:serverTimestamp()});
+   sessionStorage.clear();toast("Registration complete.");dashboard(u);
+  }catch(e){toast(e.message)}
+ };
+}
+
+async function pinLogin(user){
+ const box=document.querySelector("#authbox");
+ box.innerHTML=`<div class="card"><h2>Enter PIN</h2><p class="muted">Your mobile number</p>
+ <div style="text-align:center;font-size:22px;font-weight:950;color:#ffd21a;margin:14px 0">${esc(user.data.phone)}</div>
+ <div class="field"><label>4-DIGIT PIN</label><input id="pin" inputmode="numeric" maxlength="4" type="password" placeholder="••••"></div>
+ <button class="primary" id="loginPin">Login</button>
+ <button class="ghost" id="back" style="margin-top:10px">Back</button></div>`;
+ document.querySelector("#loginPin").onclick=async()=>{
+  const pin=document.querySelector("#pin").value;
+  if(!validPin(pin))return toast("Enter your 4-digit PIN.");
+  if(pin!==String(user.data.pin||""))return toast("Incorrect PIN.");
+  try{const u=await ensureSessionUser();if(u.uid!==user.id){const old=await getDoc(doc(db,"users",user.id));if(old.exists())dashboard({uid:user.id,email:old.data().email});else dashboard(u)}else dashboard(u)}catch(e){toast(e.message)}
+ };
+ document.querySelector("#back").onclick=()=>authScreen("login");
+}
+
+async function dashboard(u){
+ const s=await getDoc(doc(db,"users",u.uid));const d=s.data()||{};
+ root.innerHTML=`<div class="shell"><div class="top"><div class="brand"><img src="assets/perago-logo.svg">PeraGo</div><button class="ghost" style="width:auto;padding:8px 12px" id="logout">Log out</button></div>
+ <section class="card hero"><div class="eyebrow">Available balance</div><div class="balance">${peso(d.balance)}</div></section>
+ <section class="card"><h2>Hello, ${esc(d.name||"PeraGo User")}!</h2><p class="muted">${esc(d.phone||"")}</p></section>
+ </div>`;
+ document.querySelector("#logout").onclick=()=>{sessionStorage.clear();authScreen("login")};
+}
+
+onAuthStateChanged(auth,()=>{if(!sessionStorage.getItem("perago_logged"))authScreen("login")});
 if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
