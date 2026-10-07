@@ -64,10 +64,13 @@ function registerPhoneStep(){
   if(!validPhone(phone))
    return toast("Enter a valid 11-digit PH number.");
 
-  if(await findUser(phone))
-   return toast("Number is already registered.");
+  try{
+   await ensureSessionUser();
 
-  const otp=makeOtp();
+   if(await findUser(phone))
+    return toast("Number is already registered.");
+
+   const otp=makeOtp();
 
   sessionStorage.setItem("perago_demo_otp",otp);
   sessionStorage.setItem("perago_reg_phone",phone);
@@ -188,6 +191,10 @@ function registerPhoneStep(){
     }
    };
   };
+  }catch(e){
+   console.error("Generate OTP error:",e);
+   toast(e.message||"Unable to generate OTP.");
+  }
  };
 
  document.querySelector("#back").onclick=()=>authScreen("login");
