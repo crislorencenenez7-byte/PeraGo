@@ -149,7 +149,41 @@
 
 <body>
 
-<main class="pin-page">
+<style id="perago-premium-1750">
+:root{
+  --pg-bg:#f4f7fb;--pg-card:#ffffff;--pg-text:#101828;--pg-muted:#667085;
+  --pg-border:#e7ecf3;--pg-accent:#0b6bff;--pg-accent2:#13a8ff;
+  --pg-shadow:0 14px 40px rgba(16,24,40,.08);
+}
+body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
+.pg-brandbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;margin:0 0 18px;border-radius:20px;background:linear-gradient(135deg,#0b6bff,#13a8ff);color:#fff;box-shadow:0 12px 30px rgba(11,107,255,.20)}
+.pg-brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.2px}
+.pg-logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);font-weight:900;font-size:21px}
+.pg-brand small{display:block;font-weight:500;opacity:.82;font-size:11px;margin-top:1px}
+.pg-profile-dot{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#0b6bff;font-weight:800;text-decoration:none}
+.pg-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:9px;margin:16px 0 22px;border:1px solid var(--pg-border);border-radius:22px;background:rgba(255,255,255,.9);box-shadow:var(--pg-shadow)}
+.pg-tab{min-height:58px;border-radius:16px;text-decoration:none;color:var(--pg-muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:700;transition:.18s}
+.pg-tab:hover{background:#f1f6ff;color:#0b6bff}
+.pg-tab-icon{font-size:20px;line-height:1;font-weight:900}
+.pg-tab[href="__CURRENT__"]{background:#eaf2ff;color:#0b6bff}
+.pg-page-title{font-weight:900;letter-spacing:-.4px}
+.pg-section-card{background:var(--pg-card);border:1px solid var(--pg-border);border-radius:24px;box-shadow:var(--pg-shadow)}
+@media(max-width:520px){.pg-brandbar{padding:12px 14px}.pg-nav{gap:5px;padding:7px}.pg-tab{min-height:54px}.pg-tab-icon{font-size:18px}}
+</style>
+
+<div class="pg-brandbar">
+  <div class="pg-brand">
+    <div class="pg-logo">₱</div>
+    <div>PeraGo<small>Your smart wallet</small></div>
+  </div>
+  <a class="pg-profile-dot" href="profile.html" aria-label="Profile">P</a>
+</div>
+<nav class="pg-nav" aria-label="PeraGo navigation">
+  <a class="pg-tab" href="index.html" aria-label="Home"><span class="pg-tab-icon">⌂</span><span>Home</span></a><a class="pg-tab" href="send-money.html" aria-label="Send"><span class="pg-tab-icon">↗</span><span>Send</span></a><a class="pg-tab" href="qr.html" aria-label="QR"><span class="pg-tab-icon">▣</span><span>QR</span></a><a class="pg-tab" href="profile.html" aria-label="Profile"><span class="pg-tab-icon">◉</span><span>Profile</span></a>
+</nav>
+
+
+  <main class="pin-page">
 
     <div class="pin-brand">
       <div class="brand-icon">P</div>

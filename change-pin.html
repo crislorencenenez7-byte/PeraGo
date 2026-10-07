@@ -71,7 +71,7 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
 
       <div class="auth-heading">
         <h2>Change PIN</h2>
-        <p>Update your 4-digit PeraGo PIN.</p>
+        <p>Update your 6-digit PeraGo PIN.</p>
       </div>
 
       <div class="input-group">
@@ -80,10 +80,10 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
           class="otp-input"
           type="password"
           id="currentPin"
-          maxlength="4"
+          maxlength="6"
           inputmode="numeric"
           autocomplete="off"
-          placeholder="••••"
+          placeholder="••••••"
         >
       </div>
 
@@ -93,10 +93,10 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
           class="otp-input"
           type="password"
           id="newPin"
-          maxlength="4"
+          maxlength="6"
           inputmode="numeric"
           autocomplete="off"
-          placeholder="••••"
+          placeholder="••••••"
         >
       </div>
 
@@ -106,10 +106,10 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
           class="otp-input"
           type="password"
           id="confirmPin"
-          maxlength="4"
+          maxlength="6"
           inputmode="numeric"
           autocomplete="off"
-          placeholder="••••"
+          placeholder="••••••"
         >
       </div>
 
@@ -142,8 +142,8 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
       const newValue = newPin.value.trim();
       const confirmValue = confirmPin.value.trim();
 
-      if (!/^\d{4}$/.test(current)) {
-        message.textContent = "Enter your current 4-digit PIN.";
+      if (!/^\d{6}$/.test(current)) {
+        message.textContent = "Enter your current 6-digit PIN.";
         return;
       }
 
@@ -152,8 +152,8 @@ body{background:var(--pg-bg)!important;color:var(--pg-text)!important;}
         return;
       }
 
-      if (!/^\d{4}$/.test(newValue)) {
-        message.textContent = "New PIN must be exactly 4 digits.";
+      if (!/^\d{6}$/.test(newValue)) {
+        message.textContent = "New PIN must be exactly 6 digits.";
         return;
       }
 
