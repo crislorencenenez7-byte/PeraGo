@@ -1,9 +1,66 @@
 import { useState } from "react";
-import { Login, Register } from "./pages/AuthPages";
-import { Activity, Bills, BuyLoad, CashIn, CashOut, EMoney, More, Profile, ReceiveMoney, SendMoney } from "./pages/Pages";
 
-const actions=[["send","↗","Send Money"],["receive","↙","Receive Money"],["cashin","+","Cash In"],["cashout","−","Cash Out"],["bills","▤","Pay Bills"],["load","▣","Buy Load"],["emoney","₱","eMoney"],["more","•••","More"]];
+export default function App() {
+  const [started, setStarted] = useState(false);
 
-function Dashboard({user,onNavigate,onLogout}){const balance=Number(user.balance||0);return <main className="dashboard"><header className="dash-head"><div><small>Good day</small><h2>{user.name||"PeraGo User"}</h2></div><button className="avatar" onClick={()=>onNavigate("profile")}>{user.name?.charAt(0)?.toUpperCase()||"P"}</button></header><section className="balance"><div><span>Available Balance</span><h1>₱{balance.toLocaleString("en-PH",{minimumFractionDigits:2})}</h1></div><span className="peso">₱</span></section><section className="actions">{actions.map(([key,icon,label])=><button key={key} onClick={()=>onNavigate(key)}><span>{icon}</span><b>{label}</b></button>)}</section><section className="transactions"><div className="section-title"><h3>Recent Transactions</h3><button onClick={()=>onNavigate("activity")}>See all</button></div><div className="empty"><div>₱</div><strong>No transactions yet</strong><span>Your recent activity will appear here.</span></div></section><nav className="bottom"><button onClick={()=>onNavigate("dashboard")}>⌂<small>Home</small></button><button onClick={()=>onNavigate("activity")}>▤<small>Activity</small></button><button onClick={()=>onNavigate("profile")}>●<small>Profile</small></button><button onClick={onLogout}>↪<small>Logout</small></button></nav></main>}
+  return (
+    <main style={{
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "24px",
+      boxSizing: "border-box",
+      background: "#f3f7f4",
+      color: "#173c2c",
+      fontFamily: "Arial, sans-serif",
+      textAlign: "center"
+    }}>
+      <div style={{
+        width: "72px",
+        height: "72px",
+        display: "grid",
+        placeItems: "center",
+        borderRadius: "22px",
+        background: "#087f5b",
+        color: "white",
+        fontSize: "36px",
+        fontWeight: "bold"
+      }}>₱</div>
 
-export default function App(){const [user,setUser]=useState(null),[page,setPage]=useState("login");const nav=p=>setPage(p);if(!user){if(page==="register")return <Register onBack={()=>nav("login")} onRegistered={u=>{setUser(u);nav("dashboard")}}/>;return <Login onRegister={()=>nav("register")} onLogin={u=>{setUser(u);nav("dashboard")}}/>;}const back=()=>nav("dashboard");switch(page){case"send":return <SendMoney user={user} onBack={back}/>;case"receive":return <ReceiveMoney user={user} onBack={back}/>;case"cashin":return <CashIn onBack={back}/>;case"cashout":return <CashOut onBack={back}/>;case"bills":return <Bills onBack={back}/>;case"load":return <BuyLoad onBack={back}/>;case"emoney":return <EMoney onBack={back}/>;case"more":return <More onBack={back} onNavigate={nav}/>;case"profile":return <Profile user={user} onBack={back} onLogout={()=>{setUser(null);nav("login")}}/>;case"activity":return <Activity user={user} onBack={back}/>;default:return <Dashboard user={user} onNavigate={nav} onLogout={()=>{setUser(null);nav("login")}}/>;}}
+      <h1 style={{ marginBottom: "8px" }}>PeraGo</h1>
+
+      <p style={{ color: "#52665c" }}>
+        Your money, made simpler.
+      </p>
+
+      <p>
+        {started
+          ? "React is working. Ready to build PeraGo!"
+          : "Welcome to the new PeraGo."}
+      </p>
+
+      <button
+        onClick={() => setStarted(true)}
+        style={{
+          marginTop: "12px",
+          padding: "14px 24px",
+          border: "none",
+          borderRadius: "12px",
+          background: "#087f5b",
+          color: "white",
+          fontSize: "16px",
+          fontWeight: "bold",
+          cursor: "pointer"
+        }}
+      >
+        Get Started
+      </button>
+
+      <small style={{ marginTop: "28px", color: "#718078" }}>
+        PeraGo · React + Vite
+      </small>
+    </main>
+  );
+}
