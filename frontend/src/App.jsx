@@ -1,23 +1,23 @@
 import { useState } from "react";
 
-const fieldStyle = {
+const inputStyle = {
   width: "100%",
-  padding: "14px 15px",
+  padding: "13px",
   marginTop: "7px",
   border: "1px solid #dce7df",
-  borderRadius: "12px",
-  background: "#fff",
+  borderRadius: "11px",
   boxSizing: "border-box",
   fontSize: "15px",
-  outlineColor: "#087f5b"
+  background: "#fff",
+  color: "#173c2c"
 };
 
 const buttonStyle = {
   width: "100%",
-  padding: "15px",
+  padding: "14px",
   marginTop: "20px",
   border: "none",
-  borderRadius: "12px",
+  borderRadius: "11px",
   background: "#087f5b",
   color: "#fff",
   fontWeight: "bold",
@@ -25,127 +25,179 @@ const buttonStyle = {
   cursor: "pointer"
 };
 
+function Field({ label, children }) {
+  return (
+    <label style={{
+      display: "block",
+      marginTop: "15px",
+      fontSize: "14px",
+      fontWeight: "600"
+    }}>
+      {label}
+      {children}
+    </label>
+  );
+}
+
 export default function App() {
-  const [page, setPage] = useState("login");
-  const [showPassword, setShowPassword] = useState(false);
+  const [page, setPage] = useState("register");
+  const [showPin, setShowPin] = useState(false);
   const [message, setMessage] = useState("");
 
-  const isRegister = page === "register";
-
-  function handleSubmit(event) {
+  function handleRegister(event) {
     event.preventDefault();
-    setMessage(
-      "UI preview lamang. Hindi pa konektado ang authentication."
-    );
+    const form = new FormData(event.currentTarget);
+    const pin = String(form.get("pin") || "");
+    const confirmPin = String(form.get("confirmPin") || "");
+    const mobile = String(form.get("mobile") || "");
+    const birthday = String(form.get("birthday") || "");
+
+    if (!/^\d{4}$/.test(pin)) {
+      setMessage("Ang PIN ay dapat eksaktong 4 na numero.");
+      return;
+    }
+
+    if (pin !== confirmPin) {
+      setMessage("Hindi magkatugma ang PIN at Confirm PIN.");
+      return;
+    }
+
+    if (!/^(09\d{9}|\+639\d{9})$/.test(mobile)) {
+      setMessage("Gamitin ang Philippine mobile format: 09XXXXXXXXX o +639XXXXXXXXX.");
+      return;
+    }
+
+    if (!birthday || birthday >= new Date().toISOString().slice(0, 10)) {
+      setMessage("Maglagay ng valid na birthday sa nakaraan.");
+      return;
+    }
+
+    setMessage("Valid ang form! Hindi pa naka-connect sa account registration.");
   }
 
   return (
     <main style={{
       minHeight: "100vh",
-      background: "#f3f7f4",
-      fontFamily: "Arial, sans-serif",
-      color: "#173c2c",
+      padding: "24px 16px",
+      boxSizing: "border-box",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      padding: "24px",
-      boxSizing: "border-box"
+      background: "#f3f7f4",
+      color: "#173c2c",
+      fontFamily: "Arial, sans-serif"
     }}>
       <section style={{
         width: "100%",
-        maxWidth: "410px",
-        padding: "30px 24px",
-        borderRadius: "24px",
+        maxWidth: "430px",
+        padding: "26px 22px",
+        boxSizing: "border-box",
+        borderRadius: "22px",
         background: "#fff",
         boxShadow: "0 10px 35px rgba(20,70,45,.07)"
       }}>
-        <header style={{ textAlign: "center", marginBottom: "30px" }}>
+        <header style={{ textAlign: "center", marginBottom: "25px" }}>
           <div style={{
-            width: "62px",
-            height: "62px",
+            width: "58px",
+            height: "58px",
             margin: "0 auto",
             display: "grid",
             placeItems: "center",
-            borderRadius: "19px",
+            borderRadius: "18px",
             background: "#087f5b",
             color: "#fff",
-            fontSize: "30px",
+            fontSize: "29px",
             fontWeight: "bold"
           }}>₱</div>
-          <h1 style={{ margin: "14px 0 6px", fontSize: "28px" }}>
-            PeraGo
-          </h1>
+          <h1 style={{ margin: "12px 0 5px" }}>PeraGo</h1>
           <p style={{ margin: 0, color: "#718078", fontSize: "14px" }}>
-            {isRegister
-              ? "Create your account"
-              : "Your money, made simpler."}
+            Create your account
           </p>
         </header>
 
-        <h2 style={{ fontSize: "22px", marginBottom: "7px" }}>
-          {isRegister ? "Create account" : "Welcome back"}
-        </h2>
+        <h2 style={{ marginBottom: "5px" }}>Register</h2>
         <p style={{ color: "#718078", fontSize: "14px", marginTop: 0 }}>
-          {isRegister
-            ? "Enter your details to get started."
-            : "Sign in to continue to PeraGo."}
+          Fill in your personal details.
         </p>
 
-        <form onSubmit={handleSubmit}>
-          {isRegister && (
-            <label style={{ display: "block", marginTop: "18px", fontSize: "14px" }}>
-              Full name
-              <input
-                style={fieldStyle}
-                type="text"
-                placeholder="Your full name"
-                autoComplete="name"
-                required
-              />
-            </label>
-          )}
+        <form onSubmit={handleRegister}>
+          <Field label="Full Name">
+            <input name="name" style={inputStyle}
+              placeholder="Enter your full name"
+              autoComplete="name" required />
+          </Field>
 
-          <label style={{ display: "block", marginTop: "18px", fontSize: "14px" }}>
-            Email address
-            <input
-              style={fieldStyle}
-              type="email"
-              placeholder="you@example.com"
-              autoComplete="email"
-              required
-            />
-          </label>
+          <Field label="Mobile Number">
+            <input name="mobile" style={inputStyle}
+              type="tel" placeholder="09XXXXXXXXX"
+              autoComplete="tel" inputMode="tel"
+              maxLength={13} required />
+          </Field>
 
-          <label style={{ display: "block", marginTop: "18px", fontSize: "14px" }}>
-            Password
-            <input
-              style={fieldStyle}
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              autoComplete={isRegister ? "new-password" : "current-password"}
-              minLength={6}
-              required
-            />
-          </label>
+          <Field label="Email Address">
+            <input name="email" style={inputStyle}
+              type="email" placeholder="you@example.com"
+              autoComplete="email" required />
+          </Field>
+
+          <Field label="Filipino?">
+            <div style={{
+              display: "flex",
+              gap: "12px",
+              marginTop: "10px"
+            }}>
+              <label style={{ flex: 1 }}>
+                <input type="radio" name="filipino"
+                  value="Yes" required />
+                {" "}Yes
+              </label>
+              <label style={{ flex: 1 }}>
+                <input type="radio" name="filipino"
+                  value="No" required />
+                {" "}No
+              </label>
+            </div>
+          </Field>
+
+          <Field label="Birthday">
+            <input name="birthday" style={inputStyle}
+              type="date" max={new Date().toISOString().slice(0, 10)}
+              autoComplete="bday" required />
+          </Field>
+
+          <Field label="Create 4-Digit PIN">
+            <input name="pin" style={inputStyle}
+              type={showPin ? "text" : "password"}
+              inputMode="numeric" pattern="[0-9]{4}"
+              maxLength={4} minLength={4}
+              placeholder="••••" autoComplete="new-password"
+              required />
+          </Field>
+
+          <Field label="Confirm 4-Digit PIN">
+            <input name="confirmPin" style={inputStyle}
+              type={showPin ? "text" : "password"}
+              inputMode="numeric" pattern="[0-9]{4}"
+              maxLength={4} minLength={4}
+              placeholder="••••" autoComplete="new-password"
+              required />
+          </Field>
 
           <label style={{
             display: "flex",
             alignItems: "center",
             gap: "8px",
-            marginTop: "13px",
+            marginTop: "14px",
             fontSize: "13px",
             color: "#52665c"
           }}>
-            <input
-              type="checkbox"
-              checked={showPassword}
-              onChange={event => setShowPassword(event.target.checked)}
-            />
-            Show password
+            <input type="checkbox" checked={showPin}
+              onChange={event => setShowPin(event.target.checked)} />
+            Show PIN
           </label>
 
           <button type="submit" style={buttonStyle}>
-            {isRegister ? "Create Account" : "Sign In"}
+            Create Account
           </button>
         </form>
 
@@ -164,37 +216,12 @@ export default function App() {
 
         <p style={{
           textAlign: "center",
-          marginTop: "24px",
-          fontSize: "14px",
-          color: "#718078"
-        }}>
-          {isRegister ? "Already have an account? " : "New to PeraGo? "}
-          <button
-            type="button"
-            onClick={() => {
-              setPage(isRegister ? "login" : "register");
-              setMessage("");
-            }}
-            style={{
-              border: "none",
-              background: "none",
-              color: "#087f5b",
-              fontWeight: "bold",
-              cursor: "pointer",
-              fontSize: "14px"
-            }}
-          >
-            {isRegister ? "Sign In" : "Create account"}
-          </button>
-        </p>
-
-        <p style={{
-          textAlign: "center",
           fontSize: "11px",
           color: "#89978f",
-          marginBottom: 0
+          marginBottom: 0,
+          marginTop: "22px"
         }}>
-          PeraGo · Secure account access
+          PeraGo · Account Registration
         </p>
       </section>
     </main>

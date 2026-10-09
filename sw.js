@@ -1,4 +1,4 @@
-const CACHE_NAME = "perago-v13";
+const CACHE_NAME = "perago-v14";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
