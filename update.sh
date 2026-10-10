@@ -2,36 +2,14 @@
 
 set -e
 
-echo "=== PeraGo Auto Update ==="
+cd "$(dirname "$0")"
 
-# Hanapin ang kasalukuyang SW version
-CURRENT=$(grep -o 'perago-v[0-9]*' sw.js | head -1 || true)
-
-if [ -z "$CURRENT" ]; then
-    VERSION=1
-else
-    VERSION=$(echo "$CURRENT" | sed 's/perago-v//')
-    VERSION=$((VERSION + 1))
-fi
-
-NEW_VERSION="perago-v$VERSION"
-
-echo "New Service Worker version: $NEW_VERSION"
-
-# Palitan ang cache version
-sed -i -E "s/perago-v[0-9]+/$NEW_VERSION/g" sw.js
-
-echo "Service Worker updated."
-
-git add -A
-
-git commit -m "Update PeraGo $NEW_VERSION" || {
-    echo "Walang bagong changes na i-commit."
-    exit 0
-}
-
-git push origin main
+echo "=== PeraGo Safe Update Check ==="
 
 echo
-echo "=== PeraGo update pushed successfully ==="
-echo "Version: $NEW_VERSION"
+echo "Git status:"
+git status --short
+
+echo
+echo "Hindi awtomatikong mag-a-add, commit, o push."
+echo "Suriin muna ang mga file bago magpatuloy."

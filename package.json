@@ -1,0 +1,21 @@
+{
+  "name": "perago",
+  "version": "1.0.0",
+  "description": "PeraGo wallet prototype with: - Mobile-number registration - Demo 6-digit OTP generation and verification - Name/email/number registration - 4-digit PIN setup - PIN-based login - Firebase Authentication + Firestore",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crislorencenenez7-byte/PeraGo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/crislorencenenez7-byte/PeraGo/issues"
+  },
+  "homepage": "https://github.com/crislorencenenez7-byte/PeraGo#readme"
+}
